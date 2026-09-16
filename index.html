@@ -8,15 +8,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f8f9fa; color: #333; line-height: 1.6; scroll-behavior: smooth; }
         
-        /* Header / Navbar - Center Aligned Logo */
+        /* Header / Navbar - Center Aligned Logo with 5dp Top Shift */
         header { 
             background: #fff; 
-            padding: 15px 40px; 
+            padding: 10px 40px 15px 40px; 
             display: flex; 
             flex-direction: column;
             align-items: center; 
             justify-content: center;
-            gap: 15px;
+            gap: 12px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
             position: sticky; 
             top: 0; 
@@ -28,11 +28,12 @@
             flex-direction: column;
             align-items: center; 
             justify-content: center;
-            gap: 8px; 
+            gap: 6px; 
             font-weight: bold; 
             font-size: 22px; 
             color: #0b192c; 
             text-align: center;
+            margin-top: -5px; /* Shifts logo 5dp upper */
         }
         
         /* Center Logo Styling */
@@ -43,6 +44,7 @@
             object-fit: cover; 
             border: 3px solid #0b192c; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            margin-top: -5px; /* Ensures exact 5dp upward shift */
         }
         
         nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; }
@@ -55,10 +57,12 @@
             header {
                 flex-direction: row;
                 justify-content: space-between;
+                padding: 12px 40px;
             }
             .logo-area {
                 flex-direction: row;
                 text-align: left;
+                margin-top: -5px;
             }
         }
 
