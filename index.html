@@ -8,17 +8,59 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f8f9fa; color: #333; line-height: 1.6; scroll-behavior: smooth; }
         
-        /* Header / Navbar - Fixed on Top */
-        header { background: #fff; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
-        .logo-area { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 20px; color: #0b192c; }
+        /* Header / Navbar - Center Aligned Logo */
+        header { 
+            background: #fff; 
+            padding: 15px 40px; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
+
+        .logo-area { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            gap: 8px; 
+            font-weight: bold; 
+            font-size: 22px; 
+            color: #0b192c; 
+            text-align: center;
+        }
         
-        /* Logo Styling */
-        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #0b192c; }
+        /* Center Logo Styling */
+        .logo-img { 
+            width: 70px; 
+            height: 70px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 3px solid #0b192c; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
         
-        nav { display: flex; gap: 20px; align-items: center; }
+        nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; }
         nav a { text-decoration: none; color: #333; font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover { color: #3b82f6; }
         .get-started-btn { background: #0b192c; color: #fff !important; padding: 8px 18px; border-radius: 5px; }
+
+        /* Responsive Layout for Desktop / Laptop */
+        @media (min-width: 768px) {
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .logo-area {
+                flex-direction: row;
+                text-align: left;
+            }
+        }
 
         /* Hero Section */
         .hero { background: linear-gradient(135deg, #0b192c, #1e3e62); color: #fff; text-align: center; padding: 90px 20px; }
@@ -66,8 +108,8 @@
     <!-- Header / Navbar -->
     <header>
         <div class="logo-area">
-            <img src="logo.png" alt="Pay4Earn Recharge Logo" class="logo-img">
-            Pay4Earn Recharge
+            <img src="logo.png" alt="Pay4Earn Recharge Logo" class="logo-img" onerror="this.onerror=null; this.src='logo.jpg';">
+            <span>Pay4Earn Recharge</span>
         </div>
         <nav>
             <a href="#home">Home</a>
