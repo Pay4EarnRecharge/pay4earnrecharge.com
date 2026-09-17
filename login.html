@@ -44,12 +44,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Aapka Firebase Config
+        // IMPORTANT: Apne Firebase Console (Project Settings -> Web App) se real apiKey aur appId replace karein
         const firebaseConfig = {
+            apiKey: "AIzaSy...", // Yahan REAL apiKey daalein
             authDomain: "pay4earn-recharge.firebaseapp.com",
             projectId: "pay4earn-recharge",
             storageBucket: "pay4earn-recharge.firebasestorage.app",
-            messagingSenderId: "57674434302"
+            messagingSenderId: "57674434302",
+            appId: "1:57674434302:web:..." // Yahan REAL appId daalein
         };
 
         const app = initializeApp(firebaseConfig);
@@ -83,16 +85,22 @@
 
             if (isLoginView) {
                 signInWithEmailAndPassword(auth, email, password)
-                    .then(() => {
+                    .then((userCredential) => {
+                        alert("Login Successful!");
                         window.location.href = "index.html#services";
                     })
-                    .catch((error) => alert(error.message));
+                    .catch((error) => {
+                        alert("Login Error: " + error.message);
+                    });
             } else {
                 createUserWithEmailAndPassword(auth, email, password)
-                    .then(() => {
+                    .then((userCredential) => {
+                        alert("Account Created Successfully!");
                         window.location.href = "index.html#services";
                     })
-                    .catch((error) => alert(error.message));
+                    .catch((error) => {
+                        alert("Signup Error: " + error.message);
+                    });
             }
         });
     </script>
