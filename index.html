@@ -50,7 +50,7 @@
         nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; }
         nav a { text-decoration: none; color: #333; font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover { color: #3b82f6; }
-        .get-started-btn { background: #0b192c; color: #fff !important; padding: 8px 18px; border-radius: 5px; }
+        .get-started-btn { background: #0b192c; color: #fff !important; padding: 8px 18px; border-radius: 5px; cursor: pointer; }
 
         /* Responsive Layout for Desktop / Laptop */
         @media (min-width: 768px) {
@@ -69,7 +69,7 @@
         .hero { background: linear-gradient(135deg, #008080, #7fffd4); color: #0b192c; text-align: center; padding: 90px 20px; }
         .hero h1 { font-size: 40px; margin-bottom: 20px; font-weight: 700; color: #0b192c; }
         .hero p { font-size: 17px; max-width: 700px; margin: 0 auto 30px auto; color: #1e3e62; font-weight: 500; }
-        .hero-btn { background: #0b192c; color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 40px; }
+        .hero-btn { background: #0b192c; color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 40px; cursor: pointer; }
         .hero-features { display: flex; justify-content: center; gap: 30px; font-size: 14px; color: #0b192c; font-weight: bold; flex-wrap: wrap; }
 
         /* General Section Styling */
@@ -120,7 +120,7 @@
             <a href="#about">About</a>
             <a href="#faqs">FAQs</a>
             <a href="#support">Support</a>
-            <a href="#home" class="get-started-btn">Get Started</a>
+            <a id="navGetStartedBtn" class="get-started-btn">Get Started</a>
         </nav>
     </header>
 
@@ -128,7 +128,7 @@
     <section id="home" class="hero" style="max-width: 100%;">
         <h1>Fast Mobile & DTH Recharges Across India</h1>
         <p>Experience instant mobile top-ups and DTH recharges with Pay4Earn Recharge. All major operators, instant confirmation, and 24/7 support—everything you need for hassle-free recharges.</p>
-        <a href="#services" class="hero-btn">Get Started Now</a>
+        <a id="heroGetStartedBtn" class="hero-btn">Get Started Now</a>
         <div class="hero-features">
             <span>⚡ 100% Secure</span>
             <span>🔒 Instant Confirmation</span>
@@ -166,7 +166,7 @@
     </section>
 
     <!-- Services -->
-    <section id="services" style="background: #f1f5f9; max-width: 100%;">
+    <section id="services" style="background: #f1f5f9; max-width: 100%; display: none;">
         <div style="max-width: 1200px; margin: 0 auto;">
             <h2>Our Services</h2>
             <p>Simple, fast, and reliable recharge solutions for all your needs</p>
@@ -292,5 +292,59 @@
         </div>
     </footer>
 
+    <!-- Firebase Authentication & Dynamic Redirect Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Apne Firebase Console se Firebase Config Yahan Replace Karein
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+
+        // User Status Check
+        onAuthStateChanged(auth, (user) => {
+            const servicesSection = document.getElementById("services");
+            if (user) {
+                currentUser = user;
+                // Logged-in: Services section dikhayen
+                if (servicesSection) servicesSection.style.display = "block";
+            } else {
+                currentUser = null;
+                // Logged-out: Services section chhupayen
+                if (servicesSection) servicesSection.style.display = "none";
+            }
+        });
+
+        // Common Action Handler for Get Started Buttons
+        function handleGetStartedClick(event) {
+            event.preventDefault();
+            if (currentUser) {
+                // User Logged In: Direct Services par scroll karein
+                const servicesSection = document.getElementById("services");
+                if (servicesSection) {
+                    servicesSection.style.display = "block";
+                    servicesSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                // User Not Logged In: Create Account / Login page par redirect karein
+                window.location.href = "login.html";
+            }
+        }
+
+        // Attach event listeners to both buttons
+        document.getElementById("navGetStartedBtn").addEventListener("click", handleGetStartedClick);
+        document.getElementById("heroGetStartedBtn").addEventListener("click", handleGetStartedClick);
+    </script>
 </body>
 </html>
