@@ -297,14 +297,16 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Apne Firebase Console se Firebase Config Yahan Replace Karein
+        // Real Firebase Config
         const firebaseConfig = {
-           apiKey: "AIzaSy...",
-  authDomain: "pay4earn-recharge.firebaseapp.com",
-  projectId: "pay4earn-recharge",
-  storageBucket: "pay4earn-recharge.firebasestorage.app",
-  messagingSenderId: "57674434302",
-  appId: "1:57674434302:web:..."
+            apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
+            authDomain: "pay4earn-recharge.firebaseapp.com",
+            databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
+            projectId: "pay4earn-recharge",
+            storageBucket: "pay4earn-recharge.firebasestorage.app",
+            messagingSenderId: "57674434302",
+            appId: "1:57674434302:web:184a566300e1099de9c7af",
+            measurementId: "G-8Q5NP1PKC4"
         };
 
         const app = initializeApp(firebaseConfig);
