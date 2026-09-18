@@ -17,10 +17,9 @@
         /* Container Layout */
         .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
 
-        /* Top Cards: Balance & News Notice */
-        .top-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; }
-        .news-card { background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; border-left: 5px solid #ffeba2; font-size: 13px; }
+        /* Top Cards: Balance */
+        .top-bar { display: flex; margin-bottom: 20px; }
+        .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; width: 100%; max-width: 320px; }
 
         /* Service Grid Buttons */
         .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
@@ -61,14 +60,10 @@
     </header>
 
     <div class="container">
-        <!-- Balance and Notice Section -->
+        <!-- Balance Section -->
         <div class="top-bar">
             <div class="balance-card">
                 Balance: ₹ 357.10
-            </div>
-            <div class="news-card">
-                📢 <strong>NOTICE:</strong> Dear Retailers, Commission on Jio ₹299 Recharge has been revised and reduced. Kindly recharge accordingly.<br>
-                <strong>HELP LINE NUMBER:</strong> 9423951774 -- 9423968774
             </div>
         </div>
 
@@ -199,6 +194,44 @@
         document.getElementById('dthRechargeForm').addEventListener('submit', (e) => {
             e.preventDefault();
             alert('Processing DTH Recharge Request...');
+        });
+    </script>
+
+    <!-- Firebase Session Guard & Logout System -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
+            authDomain: "pay4earn-recharge.firebaseapp.com",
+            databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
+            projectId: "pay4earn-recharge",
+            storageBucket: "pay4earn-recharge.firebasestorage.app",
+            messagingSenderId: "57674434302",
+            appId: "1:57674434302:web:184a566300e1099de9c7af",
+            measurementId: "G-8Q5NP1PKC4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Security Check: Agar user logged-in nahi hai toh login.html par bhej dein
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Logout Button Handler
+        document.getElementById("logoutBtn").addEventListener("click", (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                alert("Logged Out Successfully!");
+                window.location.href = "login.html";
+            }).catch((error) => {
+                alert("Logout Error: " + error.message);
+            });
         });
     </script>
 </body>
