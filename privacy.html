@@ -22,12 +22,13 @@
         }
         .logo-area { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 20px; color: #0b192c; text-decoration: none; }
         .logo-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #0b192c; }
-        nav a { text-decoration: none; color: #333; font-weight: 500; font-size: 15px; margin-left: 20px; }
+        nav a { text-decoration: none; color: #333; font-weight: 500; font-size: 15px; margin-left: 20px; transition: color 0.3s; }
         nav a:hover { color: #3b82f6; }
 
-        /* Content Container */
+        /* Container */
         .container { max-width: 900px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        h1 { color: #0b192c; margin-bottom: 20px; font-size: 28px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        h1 { color: #0b192c; margin-bottom: 10px; font-size: 28px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        .last-updated { font-size: 13px; color: #64748b; margin-bottom: 20px; }
         h3 { color: #1e3e62; margin: 20px 0 8px 0; font-size: 18px; }
         p, li { color: #475569; font-size: 15px; margin-bottom: 12px; }
         ul { margin-left: 20px; margin-bottom: 12px; }
@@ -39,7 +40,7 @@
 </head>
 <body>
 
-    <!-- Header / Navbar -->
+    <!-- Header -->
     <header>
         <a href="index.html" class="logo-area">
             <img src="logo.png" alt="Pay4Earn Recharge Logo" class="logo-img" onerror="this.onerror=null; this.src='logo.jpg';">
@@ -51,41 +52,62 @@
         </nav>
     </header>
 
-    <!-- Main Privacy Content -->
+    <!-- Main Content -->
     <div class="container">
         <h1>Privacy Policy</h1>
-        <p>At <strong>Pay4Earn Recharge</strong> (Operated by Digital Shop CSP Traders | Proprietor: Mr. Deepen Kumar Yadav), we value your trust and are committed to protecting your personal information. This Privacy Policy details how we collect, use, and safeguard your data when you use our mobile and DTH recharge services.</p>
-        
+        <p class="last-updated">Last Updated: 01-11-2025</p>
+
+        <h3>Introduction</h3>
+        <p>Welcome to <strong>Pay4Earn Recharge</strong> (Proprietor: Mr. Deepen Kumar Yadav). This Privacy Policy explains how we collect, use, disclose, and protect your information when you use our mobile and web application ("App"). Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, please do not use the App.</p>
+
         <h3>1. Information We Collect</h3>
-        <p>To process your recharges and deliver seamless support, we collect the following minimal user information:</p>
+        <p>We may collect and process the following types of information:</p>
         <ul>
-            <li>Mobile Phone Numbers and DTH Subscriber IDs for recharge execution.</li>
-            <li>Email addresses and contact details provided during user registration.</li>
-            <li>Transaction history, reference IDs, and payment status details.</li>
+            <li><strong>Personal Information:</strong> Information that identifies you as an individual, such as your name, email address, phone number, etc. This information is only collected if you voluntarily provide it to us during account registration or support inquiries.</li>
+            <li><strong>Image and Document Information:</strong> When you upload a profile picture or provide identity documents (e.g., a government-issued ID for retailer/user verification), we collect and store those images securely. We use this information strictly to verify your identity and personalize your account.</li>
+            <li><strong>Device Information:</strong> We may collect information about your mobile device, including hardware model, operating system version, and unique device identifiers to optimize system performance.</li>
+            <li><strong>Usage Data:</strong> We collect information regarding how you interact with the App, such as features accessed and recharge transaction activities.</li>
+            <li><strong>Log Data:</strong> Our servers automatically record standard technical log data, including IP addresses, system logs, and operational timestamps.</li>
         </ul>
 
         <h3>2. How We Use Your Information</h3>
-        <p>Your details are strictly utilized to:</p>
+        <p>We use the collected information for the following core purposes:</p>
         <ul>
-            <li>Execute instant mobile and DTH recharge orders accurately.</li>
-            <li>Send transaction updates, confirmations, and alerts.</li>
-            <li>Provide 24/7 customer support and resolve transaction disputes.</li>
-            <li>Ensure legal compliance and maintain account security.</li>
+            <li>To provide, maintain, and process mobile and DTH recharge services.</li>
+            <li>To verify your account identity and secure transaction workflows.</li>
+            <li>To communicate transaction statuses, system notifications, and respond to support queries.</li>
+            <li>To monitor, analyze, and optimize app performance and user safety.</li>
+            <li>To detect, prevent, and protect against fraudulent transactions and unauthorized system access.</li>
+            <li>To satisfy legal obligations and enforce platform service rules.</li>
         </ul>
 
-        <h3>3. Data Protection & Encryption</h3>
-        <p>We enforce strict, industry-standard security protocols to protect your personal information. All transaction workflows integrated via encrypted payment gateways adhere to high-level security standards. We never store sensitive banking credentials, credit/debit card numbers, PINs, or CVV details on our servers.</p>
+        <h3>3. Sharing of Information</h3>
+        <p>We may share necessary data only under specific operational circumstances:</p>
+        <ul>
+            <li><strong>Service Providers & Gateways:</strong> We share essential transaction data with certified payment gateway integration partners and telecom operator APIs to execute your recharges securely.</li>
+            <li><strong>Legal Compliance:</strong> We may disclose information if mandated by applicable laws, court orders, or official government requests.</li>
+        </ul>
 
-        <h3>4. Data Sharing & Third-Party Services</h3>
-        <p>We do not sell, rent, or lease your personal information to third parties. Data is shared exclusively with authorized telecom/DTH operators and certified payment gateway providers solely to complete your requested transactions.</p>
+        <h3>4. Security of Your Information</h3>
+        <p>We implement administrative, technical, and physical security measures to safeguard user information. Sensitive transaction details are transmitted through encrypted data connections. However, please note that no transmission channel over the Internet can be guaranteed as 100% immune from external security breaches.</p>
 
-        <h3>5. Contact Privacy Officer</h3>
-        <p>If you have any questions, concerns, or requests regarding this Privacy Policy, please contact our support team:</p>
+        <h3>5. Your Data Protection Rights</h3>
+        <p>Subject to local regulations, you have rights regarding your personal data, including requesting access, updates, or account deletion. To exercise any data privacy rights, please submit a written request to <strong>deependigital@gmail.com</strong>.</p>
+
+        <h3>6. Third-Party Links</h3>
+        <p>Our App may contain links to third-party payment channels or external websites. We are not responsible for the independent privacy practices or content hosted on those external platforms.</p>
+
+        <h3>7. Changes to This Privacy Policy</h3>
+        <p>We reserve the right to revise this Privacy Policy periodically. Any modifications will be posted directly on this page along with an updated "Last Updated" timestamp.</p>
+
+        <h3>8. Contact Us</h3>
+        <p>If you have any questions or concerns regarding this Privacy Policy, please reach out to us:</p>
         <p>
             <strong>Brand Name:</strong> Pay4Earn Recharge<br>
-            <strong>Email Support:</strong> deependigital@gmail.com<br>
+            <strong>Proprietor:</strong> Mr. Deepen Kumar Yadav<br>
+            <strong>Address:</strong> At- Bhojpur, Jhala, Tedhagachh, Distt- Kishanganj, Bihar - 855101<br>
             <strong>Helpline / WhatsApp:</strong> +91 70338 14401<br>
-            <strong>Address:</strong> At- Bhojpur, Jhala, Tedhagachh, Distt- Kishanganj, Bihar - 855101
+            <strong>Email Support:</strong> deependigital@gmail.com
         </p>
     </div>
 
