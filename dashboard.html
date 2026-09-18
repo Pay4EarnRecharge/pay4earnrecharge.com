@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Pay4Earn Recharge</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f1f5f9; color: #333; }
+
+        /* Header Navigation */
+        header { background: #0b192c; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: bold; font-size: 20px; }
+        .nav-menu { display: flex; gap: 15px; }
+        .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; }
+
+        /* Container Layout */
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+
+        /* Top Cards: Balance & News Notice */
+        .top-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; }
+        .news-card { background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; border-left: 5px solid #ffeba2; font-size: 13px; }
+
+        /* Service Grid Buttons */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
+        .service-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+        /* Recharge Form Box */
+        .recharge-box { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; display: none; }
+        .recharge-box h3 { margin-bottom: 15px; color: #0b192c; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; }
+        .browse-plan-btn { background: #64748b; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-top: 5px; }
+        .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+
+        /* Recent Transactions Table */
+        .tx-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .tx-section h3 { margin-bottom: 15px; color: #0b192c; }
+        .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        .tx-table th, .tx-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        .tx-table th { background: #f8f9fa; color: #475569; }
+        .badge-success { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <header>
+        <div class="logo">Pay4Earn Recharge</div>
+        <div class="nav-menu">
+            <a href="#">Bank Details</a>
+            <a href="#">Services</a>
+            <a href="#">Refer & Earn</a>
+            <a href="#">Profile</a>
+            <a href="#">Reports</a>
+            <a id="logoutBtn" href="#" style="color: #f87171;">Logout</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Balance and Notice Section -->
+        <div class="top-bar">
+            <div class="balance-card">
+                Balance: ₹ 357.10
+            </div>
+            <div class="news-card">
+                📢 <strong>NOTICE:</strong> Dear Retailers, Commission on Jio ₹299 Recharge has been revised and reduced. Kindly recharge accordingly.<br>
+                <strong>HELP LINE NUMBER:</strong> 9423951774 -- 9423968774
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome ! Select Service</h2>
+
+        <!-- Services Grid -->
+        <div class="services-grid">
+            <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
+            <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
+            <div class="service-btn">🌐 Broadband</div>
+            <div class="service-btn">📄 POSTPAID</div>
+            <div class="service-btn">☎️ Landline</div>
+            <div class="service-btn">💡 ELECTRICITY</div>
+            <div class="service-btn">💧 Water Bill</div>
+            <div class="service-btn">🔥 GAS</div>
+            <div class="service-btn">🛡️ INSURANCE</div>
+        </div>
+
+        <!-- Mobile Recharge Form -->
+        <div id="mobileForm" class="recharge-box">
+            <h3>Mobile Recharge Flow</h3>
+            <form id="mobileRechargeForm">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="text" maxlength="10" placeholder="Enter 10 digit Mobile Number" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Operator</label>
+                    <select required>
+                        <option value="">-- Choose Operator --</option>
+                        <option value="jio">Jio</option>
+                        <option value="airtel">Airtel</option>
+                        <option value="vi">Vodafone Idea (Vi)</option>
+                        <option value="bsnl">BSNL</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Recharge Amount</label>
+                    <input type="number" placeholder="Enter Amount (₹)" required>
+                    <button type="button" class="browse-plan-btn" onclick="alert('Plans list loading...')">Browse Plan</button>
+                </div>
+                <button type="submit" class="pay-now-btn">PAY NOW</button>
+            </form>
+        </div>
+
+        <!-- DTH Recharge Form -->
+        <div id="dthForm" class="recharge-box">
+            <h3>DTH Recharge Flow</h3>
+            <form id="dthRechargeForm">
+                <div class="form-group">
+                    <label>Customer ID / VC Number</label>
+                    <input type="text" placeholder="Enter DTH Customer ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Operator</label>
+                    <select required>
+                        <option value="">-- Choose Operator --</option>
+                        <option value="tataplay">Tata Play</option>
+                        <option value="airteldth">Airtel Digital TV</option>
+                        <option value="dishtv">Dish TV</option>
+                        <option value="sundirect">Sun Direct</option>
+                        <option value="d2h">d2h</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Recharge Amount</label>
+                    <input type="number" placeholder="Enter Amount (₹)" required>
+                    <button type="button" class="browse-plan-btn" onclick="alert('DTH Heavy Refreshing Info...')">Browse Plan / Info</button>
+                </div>
+                <button type="submit" class="pay-now-btn">PAY NOW</button>
+            </form>
+        </div>
+
+        <!-- Last 10 Transactions Table -->
+        <div class="tx-section">
+            <h3>Last 10 Transactions</h3>
+            <div style="overflow-x: auto;">
+                <table class="tx-table">
+                    <thead>
+                        <tr>
+                            <th>S#</th>
+                            <th>Date</th>
+                            <th>Reqid</th>
+                            <th>Provider</th>
+                            <th>Number</th>
+                            <th>Amt</th>
+                            <th>Your Cost</th>
+                            <th>Status</th>
+                            <th>Op. Txn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>16-09-2026</td>
+                            <td>784743729</td>
+                            <td>Jio</td>
+                            <td>6203672420</td>
+                            <td>₹ 349.00</td>
+                            <td>₹ 343.76</td>
+                            <td><span class="badge-success">Success</span></td>
+                            <td>4814864384</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Logic Scripts -->
+    <script>
+        function openService(type) {
+            document.getElementById('mobileForm').style.display = 'none';
+            document.getElementById('dthForm').style.display = 'none';
+
+            if(type === 'mobile') {
+                document.getElementById('mobileForm').style.display = 'block';
+            } else if(type === 'dth') {
+                document.getElementById('dthForm').style.display = 'block';
+            }
+        }
+
+        document.getElementById('mobileRechargeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Processing Mobile Recharge Request...');
+        });
+
+        document.getElementById('dthRechargeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Processing DTH Recharge Request...');
+        });
+    </script>
+</body>
+</html>
