@@ -8,30 +8,24 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #f1f5f9; color: #333; }
 
-        /* Header Navigation */
         header { background: #0b192c; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-weight: bold; font-size: 20px; }
         .nav-menu { display: flex; gap: 15px; }
         .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; }
         .nav-menu a:hover { text-decoration: underline; color: #38bdf8; }
 
-        /* Container Layout */
         .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
 
-        /* Dynamic View Sections */
         .view-section { display: none; }
         .active-view { display: block; }
 
-        /* Top Cards: Balance */
         .top-bar { display: flex; margin-bottom: 20px; }
         .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; width: 100%; max-width: 320px; }
 
-        /* Service Grid Buttons */
         .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
         .service-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
 
-        /* Cards & Forms */
         .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: bold; }
@@ -39,7 +33,6 @@
         .browse-plan-btn { background: #64748b; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-top: 5px; }
         .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
 
-        /* Recent Transactions Table */
         .tx-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .tx-section h3 { margin-bottom: 15px; color: #0b192c; }
         .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
@@ -51,7 +44,6 @@
 </head>
 <body>
 
-    <!-- Top Navbar -->
     <header>
         <div class="logo">Pay4Earn Recharge</div>
         <div class="nav-menu">
@@ -66,9 +58,8 @@
 
     <div class="container">
 
-        <!-- 1. SERVICES VIEW (MAIN DASHBOARD) -->
+        <!-- 1. SERVICES VIEW -->
         <div id="servicesView" class="view-section active-view">
-            <!-- Balance Section -->
             <div class="top-bar">
                 <div class="balance-card">
                     Balance: ₹ <span id="walletBalance">0.00</span>
@@ -77,7 +68,6 @@
 
             <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome ! Select Service</h2>
 
-            <!-- Services Grid -->
             <div class="services-grid">
                 <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
                 <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
@@ -90,7 +80,6 @@
                 <div class="service-btn" onclick="alert('Insurance service coming soon!')">🛡️ INSURANCE</div>
             </div>
 
-            <!-- Mobile Recharge Form -->
             <div id="mobileForm" class="content-card" style="display: none;">
                 <h3 style="margin-bottom: 15px; color: #0b192c;">Mobile Recharge</h3>
                 <form id="mobileRechargeForm">
@@ -117,7 +106,6 @@
                 </form>
             </div>
 
-            <!-- DTH Recharge Form -->
             <div id="dthForm" class="content-card" style="display: none;">
                 <h3 style="margin-bottom: 15px; color: #0b192c;">DTH Recharge</h3>
                 <form id="dthRechargeForm">
@@ -145,7 +133,6 @@
                 </form>
             </div>
 
-            <!-- Last 10 Transactions Table -->
             <div class="tx-section">
                 <h3>Last 10 Transactions</h3>
                 <div style="overflow-x: auto;">
@@ -196,9 +183,9 @@
         <!-- 4. RETAILER PROFILE VIEW -->
         <div id="profileView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
-            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Retailer User</span></p>
+            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
             <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">+91 70338 14401</span></p>
+            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
             <p style="margin-bottom: 8px;"><strong>Business Entity:</strong> Digital Shop CSP Traders</p>
             <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Active Merchant / Retailer</p>
         </div>
@@ -211,7 +198,6 @@
 
     </div>
 
-    <!-- UI Logic & Local Transaction Storage -->
     <script>
         let txCounter = 0;
 
@@ -285,10 +271,11 @@
         });
     </script>
 
-    <!-- Firebase Session Guard & Profile Sync -->
+    <!-- Firebase Session & Registration Data Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
@@ -303,8 +290,9 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.href = "login.html";
             } else {
@@ -313,8 +301,22 @@
                 const userMobileElem = document.getElementById("userMobileText");
 
                 if(userEmailElem) userEmailElem.innerText = user.email;
-                if(userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
-                if(userMobileElem && user.phoneNumber) userMobileElem.innerText = user.phoneNumber;
+
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        if(userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || user.displayName || "User";
+                        if(userMobileElem) userMobileElem.innerText = userData.mobile || "Not Provided";
+                    } else {
+                        if(userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
+                        if(userMobileElem) userMobileElem.innerText = "Not Provided";
+                    }
+                } catch(e) {
+                    console.error("Error loading user profile:", e);
+                }
             }
         });
 
