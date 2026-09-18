@@ -1,149 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Register - Pay4Earn Recharge</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .auth-card { background: #fff; padding: 30px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        h2 { color: #0b192c; margin-bottom: 20px; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #475569; font-size: 14px; }
-        input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; }
-        .btn { width: 100%; background: #0b192c; color: #fff; padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .toggle-text { margin-top: 15px; text-align: center; font-size: 14px; color: #64748b; }
-        .toggle-text a { color: #2563eb; text-decoration: none; cursor: pointer; font-weight: bold; }
-    </style>
-</head>
-<body>
+<!-- Firebase SDK Modules -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <div class="auth-card">
-        <h2 id="formTitle">Login to Account</h2>
-        <form id="authForm">
-            <!-- Full Name Field (Registration flow) -->
-            <div class="form-group" id="nameGroup" style="display: none;">
-                <label>Full Name</label>
-                <input type="text" id="fullName" placeholder="Enter Full Name">
-            </div>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
+        authDomain: "pay4earn-recharge.firebaseapp.com",
+        databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
+        projectId: "pay4earn-recharge",
+        storageBucket: "pay4earn-recharge.firebasestorage.app",
+        messagingSenderId: "57674434302",
+        appId: "1:57674434302:web:184a566300e1099de9c7af",
+        measurementId: "G-8Q5NP1PKC4"
+    };
 
-            <!-- Mobile Number Field (Registration flow) -->
-            <div class="form-group" id="mobileGroup" style="display: none;">
-                <label>Mobile Number</label>
-                <input type="tel" id="mobile" maxlength="10" placeholder="Enter 10 digit Mobile Number">
-            </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="email" required placeholder="example@mail.com">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" required placeholder="******">
-            </div>
-            <button type="submit" id="submitBtn" class="btn">Login</button>
-        </form>
-        
-        <div class="toggle-text">
-            <span id="toggleMsg">Don't have an account?</span> 
-            <a id="toggleBtn">Create Account</a>
-        </div>
-    </div>
+    // Registration Form Submit Handler
+    document.getElementById("authForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
 
-    <!-- Firebase Auth & Firestore Integration -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
-            authDomain: "pay4earn-recharge.firebaseapp.com",
-            databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
-            projectId: "pay4earn-recharge",
-            storageBucket: "pay4earn-recharge.firebasestorage.app",
-            messagingSenderId: "57674434302",
-            appId: "1:57674434302:web:184a566300e1099de9c7af",
-            measurementId: "G-8Q5NP1PKC4"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let isLoginView = true;
-        const formTitle = document.getElementById("formTitle");
-        const submitBtn = document.getElementById("submitBtn");
-        const toggleMsg = document.getElementById("toggleMsg");
-        const toggleBtn = document.getElementById("toggleBtn");
-        const nameGroup = document.getElementById("nameGroup");
-        const mobileGroup = document.getElementById("mobileGroup");
-
-        toggleBtn.addEventListener("click", () => {
-            isLoginView = !isLoginView;
-            if(isLoginView) {
-                formTitle.innerText = "Login to Account";
-                submitBtn.innerText = "Login";
-                toggleMsg.innerText = "Don't have an account?";
-                toggleBtn.innerText = "Create Account";
-                nameGroup.style.display = "none";
-                mobileGroup.style.display = "none";
-            } else {
-                formTitle.innerText = "Create New Account";
-                submitBtn.innerText = "Register";
-                toggleMsg.innerText = "Already have an account?";
-                toggleBtn.innerText = "Login";
-                nameGroup.style.display = "block";
-                mobileGroup.style.display = "block";
-            }
-        });
-
-        document.getElementById("authForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
-
-            if (isLoginView) {
-                signInWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        alert("Login Successful!");
-                        window.location.href = "dashboard.html";
-                    })
-                    .catch((error) => {
-                        alert("Login Error: " + error.message);
-                    });
-            } else {
-                const fullName = document.getElementById("fullName").value.trim();
-                const mobile = document.getElementById("mobile").value.trim();
-
-                if (!fullName || !mobile) {
-                    alert("Please fill in Full Name and Mobile Number!");
-                    return;
-                }
-
-                try {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-
-                    // Auth profile display name sync
-                    await updateProfile(user, { displayName: fullName });
-
-                    // Firestore DB Entry save
-                    await setDoc(doc(db, "users", user.uid), {
-                        fullName: fullName,
-                        email: email,
-                        mobile: mobile,
-                        createdAt: new Date()
-                    });
-
-                    alert("Account Created Successfully!");
+        if (isLoginView) {
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    alert("Login Successful!");
                     window.location.href = "dashboard.html";
-                } catch (error) {
-                    alert("Signup Error: " + error.message);
-                }
+                })
+                .catch((error) => alert("Login Error: " + error.message));
+        } else {
+            const fullName = document.getElementById("fullName").value.trim();
+            const mobile = document.getElementById("mobile").value.trim();
+
+            if (!fullName || !mobile) {
+                alert("Please fill in Name and Mobile Number!");
+                return;
             }
-        });
-    </script>
-</body>
-</html>
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // 1. Firebase Auth Profile Update
+                await updateProfile(user, { displayName: fullName });
+
+                // 2. Exact Original Details Firestore DB me Save
+                await setDoc(doc(db, "users", user.uid), {
+                    fullName: fullName,
+                    email: email,
+                    mobile: mobile,
+                    createdAt: new Date()
+                });
+
+                alert("Account Created Successfully!");
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                alert("Signup Error: " + error.message);
+            }
+        }
+    });
+</script>
