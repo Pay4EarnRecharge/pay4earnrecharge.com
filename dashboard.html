@@ -12,10 +12,15 @@
         header { background: #0b192c; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-weight: bold; font-size: 20px; }
         .nav-menu { display: flex; gap: 15px; }
-        .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; }
+        .nav-menu a:hover { text-decoration: underline; }
 
         /* Container Layout */
         .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+
+        /* Dynamic View Sections */
+        .view-section { display: none; }
+        .active-view { display: block; }
 
         /* Top Cards: Balance */
         .top-bar { display: flex; margin-bottom: 20px; }
@@ -26,9 +31,8 @@
         .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
         .service-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
 
-        /* Recharge Form Box */
-        .recharge-box { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; display: none; }
-        .recharge-box h3 { margin-bottom: 15px; color: #0b192c; }
+        /* Cards & Forms */
+        .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: bold; }
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; }
@@ -41,7 +45,7 @@
         .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
         .tx-table th, .tx-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
         .tx-table th { background: #f8f9fa; color: #475569; }
-        .badge-success { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .empty-row { text-align: center; color: #64748b; padding: 20px !important; }
     </style>
 </head>
 <body>
@@ -50,131 +54,171 @@
     <header>
         <div class="logo">Pay4Earn Recharge</div>
         <div class="nav-menu">
-            <a href="#">Bank Details</a>
-            <a href="#">Services</a>
-            <a href="#">Refer & Earn</a>
-            <a href="#">Profile</a>
-            <a href="#">Reports</a>
-            <a id="logoutBtn" href="#" style="color: #f87171;">Logout</a>
+            <a onclick="showSection('bankView')">Bank Details</a>
+            <a onclick="showSection('servicesView')">Services</a>
+            <a onclick="showSection('referView')">Refer & Earn</a>
+            <a onclick="showSection('profileView')">Profile</a>
+            <a onclick="showSection('reportsView')">Reports</a>
+            <a id="logoutBtn" style="color: #f87171;">Logout</a>
         </div>
     </header>
 
     <div class="container">
-        <!-- Balance Section -->
-        <div class="top-bar">
-            <div class="balance-card">
-                Balance: ₹ 357.10
+
+        <!-- 1. SERVICES VIEW (DEFAULT MAIN DASHBOARD) -->
+        <div id="servicesView" class="view-section active-view">
+            <!-- Balance Section -->
+            <div class="top-bar">
+                <div class="balance-card">
+                    Balance: ₹ 0.00
+                </div>
+            </div>
+
+            <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome ! Select Service</h2>
+
+            <!-- Services Grid -->
+            <div class="services-grid">
+                <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
+                <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
+                <div class="service-btn" onclick="alert('Broadband service coming soon!')">🌐 Broadband</div>
+                <div class="service-btn" onclick="alert('Postpaid service coming soon!')">📄 POSTPAID</div>
+                <div class="service-btn" onclick="alert('Landline service coming soon!')">☎️ Landline</div>
+                <div class="service-btn" onclick="alert('Electricity service coming soon!')">💡 ELECTRICITY</div>
+                <div class="service-btn" onclick="alert('Water Bill service coming soon!')">💧 Water Bill</div>
+                <div class="service-btn" onclick="alert('Gas service coming soon!')">🔥 GAS</div>
+                <div class="service-btn" onclick="alert('Insurance service coming soon!')">🛡️ INSURANCE</div>
+            </div>
+
+            <!-- Mobile Recharge Form -->
+            <div id="mobileForm" class="content-card" style="display: none;">
+                <h3 style="margin-bottom: 15px; color: #0b192c;">Mobile Recharge</h3>
+                <form id="mobileRechargeForm">
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" maxlength="10" placeholder="Enter 10 digit Mobile Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Operator</label>
+                        <select required>
+                            <option value="">-- Choose Operator --</option>
+                            <option value="jio">Jio</option>
+                            <option value="airtel">Airtel</option>
+                            <option value="vi">Vodafone Idea (Vi)</option>
+                            <option value="bsnl">BSNL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Recharge Amount</label>
+                        <input type="number" placeholder="Enter Amount (₹)" required>
+                        <button type="button" class="browse-plan-btn" onclick="alert('Plans list loading...')">Browse Plan</button>
+                    </div>
+                    <button type="submit" class="pay-now-btn">PAY NOW</button>
+                </form>
+            </div>
+
+            <!-- DTH Recharge Form -->
+            <div id="dthForm" class="content-card" style="display: none;">
+                <h3 style="margin-bottom: 15px; color: #0b192c;">DTH Recharge</h3>
+                <form id="dthRechargeForm">
+                    <div class="form-group">
+                        <label>Customer ID / VC Number</label>
+                        <input type="text" placeholder="Enter DTH Customer ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Operator</label>
+                        <select required>
+                            <option value="">-- Choose Operator --</option>
+                            <option value="tataplay">Tata Play</option>
+                            <option value="airteldth">Airtel Digital TV</option>
+                            <option value="dishtv">Dish TV</option>
+                            <option value="sundirect">Sun Direct</option>
+                            <option value="d2h">d2h</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Recharge Amount</label>
+                        <input type="number" placeholder="Enter Amount (₹)" required>
+                        <button type="button" class="browse-plan-btn" onclick="alert('DTH Plan Info...')">Browse Plan / Info</button>
+                    </div>
+                    <button type="submit" class="pay-now-btn">PAY NOW</button>
+                </form>
+            </div>
+
+            <!-- Last 10 Transactions Table (Web App Real-time Entries) -->
+            <div class="tx-section">
+                <h3>Last 10 Transactions</h3>
+                <div style="overflow-x: auto;">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>S#</th>
+                                <th>Date</th>
+                                <th>Reqid</th>
+                                <th>Provider</th>
+                                <th>Number</th>
+                                <th>Amt</th>
+                                <th>Your Cost</th>
+                                <th>Status</th>
+                                <th>Op. Txn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionBody">
+                            <tr>
+                                <td colspan="9" class="empty-row">No transactions found yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome ! Select Service</h2>
-
-        <!-- Services Grid -->
-        <div class="services-grid">
-            <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
-            <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
-            <div class="service-btn">🌐 Broadband</div>
-            <div class="service-btn">📄 POSTPAID</div>
-            <div class="service-btn">☎️ Landline</div>
-            <div class="service-btn">💡 ELECTRICITY</div>
-            <div class="service-btn">💧 Water Bill</div>
-            <div class="service-btn">🔥 GAS</div>
-            <div class="service-btn">🛡️ INSURANCE</div>
+        <!-- 2. BANK DETAILS VIEW -->
+        <div id="bankView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Bank Details for Wallet Add Money</h2>
+            <p style="margin-bottom: 8px;"><strong>Business Name:</strong> Digital Shop CSP Traders</p>
+            <p style="margin-bottom: 8px;"><strong>Proprietor:</strong> Deepen Kumar Yadav</p>
+            <p style="margin-bottom: 8px;"><strong>Bank Name:</strong> State Bank of India (SBI)</p>
+            <p style="margin-bottom: 8px;"><strong>UPI ID:</strong> 7033814401@upi</p>
+            <p style="color: #64748b; font-size: 13px; margin-top: 15px;">Note: Send payment screenshot to admin for instant balance credit.</p>
         </div>
 
-        <!-- Mobile Recharge Form -->
-        <div id="mobileForm" class="recharge-box">
-            <h3>Mobile Recharge</h3>
-            <form id="mobileRechargeForm">
-                <div class="form-group">
-                    <label>Mobile Number</label>
-                    <input type="text" maxlength="10" placeholder="Enter 10 digit Mobile Number" required>
-                </div>
-                <div class="form-group">
-                    <label>Select Operator</label>
-                    <select required>
-                        <option value="">-- Choose Operator --</option>
-                        <option value="jio">Jio</option>
-                        <option value="airtel">Airtel</option>
-                        <option value="vi">Vodafone Idea (Vi)</option>
-                        <option value="bsnl">BSNL</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Recharge Amount</label>
-                    <input type="number" placeholder="Enter Amount (₹)" required>
-                    <button type="button" class="browse-plan-btn" onclick="alert('Plans list loading...')">Browse Plan</button>
-                </div>
-                <button type="submit" class="pay-now-btn">PAY NOW</button>
-            </form>
-        </div>
-
-        <!-- DTH Recharge Form -->
-        <div id="dthForm" class="recharge-box">
-            <h3>DTH Recharge</h3>
-            <form id="dthRechargeForm">
-                <div class="form-group">
-                    <label>Customer ID / VC Number</label>
-                    <input type="text" placeholder="Enter DTH Customer ID" required>
-                </div>
-                <div class="form-group">
-                    <label>Select Operator</label>
-                    <select required>
-                        <option value="">-- Choose Operator --</option>
-                        <option value="tataplay">Tata Play</option>
-                        <option value="airteldth">Airtel Digital TV</option>
-                        <option value="dishtv">Dish TV</option>
-                        <option value="sundirect">Sun Direct</option>
-                        <option value="d2h">d2h</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Recharge Amount</label>
-                    <input type="number" placeholder="Enter Amount (₹)" required>
-                    <button type="button" class="browse-plan-btn" onclick="alert('DTH Heavy Refreshing Info...')">Browse Plan / Info</button>
-                </div>
-                <button type="submit" class="pay-now-btn">PAY NOW</button>
-            </form>
-        </div>
-
-        <!-- Last 10 Transactions Table -->
-        <div class="tx-section">
-            <h3>Last 10 Transactions</h3>
-            <div style="overflow-x: auto;">
-                <table class="tx-table">
-                    <thead>
-                        <tr>
-                            <th>S#</th>
-                            <th>Date</th>
-                            <th>Reqid</th>
-                            <th>Provider</th>
-                            <th>Number</th>
-                            <th>Amt</th>
-                            <th>Your Cost</th>
-                            <th>Status</th>
-                            <th>Op. Txn</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>16-09-2026</td>
-                            <td>784743729</td>
-                            <td>Jio</td>
-                            <td>6203672420</td>
-                            <td>₹ 349.00</td>
-                            <td>₹ 343.76</td>
-                            <td><span class="badge-success">Success</span></td>
-                            <td>4814864384</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- 3. REFER & EARN VIEW -->
+        <div id="referView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Refer & Earn</h2>
+            <p style="margin-bottom: 12px; color: #475569;">Share your referral link with retailers and friends to earn instant commission on every recharge.</p>
+            <div class="form-group">
+                <label>Your Referral Link</label>
+                <input type="text" readonly value="https://pay4earnrecharge.github.io/pay4earnrecharge.com/login.html">
             </div>
         </div>
+
+        <!-- 4. PROFILE VIEW -->
+        <div id="profileView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
+            <p style="margin-bottom: 8px;"><strong>Business Name:</strong> Digital Shop CSP Traders</p>
+            <p style="margin-bottom: 8px;"><strong>Proprietor:</strong> Deepen Kumar Yadav</p>
+            <p style="margin-bottom: 8px;"><strong>Registered Email:</strong> <span id="userEmailText">Loading...</span></p>
+            <p style="margin-bottom: 8px;"><strong>Help Line Contact:</strong> +91 70338 14401</p>
+            <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Retailer / Merchant Account</p>
+        </div>
+
+        <!-- 5. REPORTS VIEW -->
+        <div id="reportsView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Recharge & Transaction Reports</h2>
+            <p style="color: #64748b;">All detailed recharge logs and date-wise summary will appear here.</p>
+        </div>
+
     </div>
 
     <!-- UI Logic Scripts -->
     <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.remove('active-view');
+            });
+            document.getElementById(sectionId).classList.add('active-view');
+        }
+
         function openService(type) {
             document.getElementById('mobileForm').style.display = 'none';
             document.getElementById('dthForm').style.display = 'none';
@@ -197,7 +241,7 @@
         });
     </script>
 
-    <!-- Firebase Session Guard & Logout System -->
+    <!-- Firebase Session Guard & Profile Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -216,14 +260,15 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Security Check: Agar user logged-in nahi hai toh login.html par bhej dein
         onAuthStateChanged(auth, (user) => {
             if (!user) {
                 window.location.href = "login.html";
+            } else {
+                const userEmailElem = document.getElementById("userEmailText");
+                if(userEmailElem) userEmailElem.innerText = user.email;
             }
         });
 
-        // Logout Button Handler
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
             signOut(auth).then(() => {
