@@ -1,14 +1,4 @@
-<!-- Retailer Profile HTML Structure -->
-<div id="profileView" class="view-section content-card">
-    <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
-    <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
-    <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
-    <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
-    <p style="margin-bottom: 8px;"><strong>Business Entity:</strong> Digital Shop CSP Traders</p>
-    <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Active Merchant / Retailer</p>
-</div>
-
-<!-- Firebase Real-time Profile Fetch Script -->
+<!-- Firebase Profile Fetch Script (Fixed Collection Case & Fields) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -36,27 +26,32 @@
             const userDisplayNameElem = document.getElementById("userDisplayName");
             const userEmailElem = document.getElementById("userEmailText");
             const userMobileElem = document.getElementById("userMobileText");
+            const walletBalanceElem = document.getElementById("walletBalance");
 
             try {
-                // Fetch document matching current User UID
-                const userDocRef = doc(db, "users", user.uid);
+                // IMPORTANT: Capital "Users" (matching your Android App & Firebase structure)
+                const userDocRef = doc(db, "Users", user.uid);
                 const docSnap = await getDoc(userDocRef);
 
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
+
+                    // Firestore se exact values set karein
+                    if (userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || "Not Provided";
+                    if (userEmailElem) userEmailElem.innerText = userData.email || user.email;
+                    if (userMobileElem) userMobileElem.innerText = userData.mobile || "Not Provided";
                     
-                    // Display EXACT registered values from Firestore
-                    userDisplayNameElem.innerText = userData.fullName || "Not Provided";
-                    userEmailElem.innerText = userData.email || user.email;
-                    userMobileElem.innerText = userData.mobile || "Not Provided";
+                    // Wallet Balance sync
+                    if (walletBalanceElem && userData.walletBalance !== undefined) {
+                        walletBalanceElem.innerText = parseFloat(userData.walletBalance).toFixed(2);
+                    }
                 } else {
-                    // Fallback to Auth baseline if document doesn't exist
-                    userDisplayNameElem.innerText = user.displayName || "Not Provided";
-                    userEmailElem.innerText = user.email;
-                    userMobileElem.innerText = "Not Provided";
+                    if (userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
+                    if (userEmailElem) userEmailElem.innerText = user.email;
+                    if (userMobileElem) userMobileElem.innerText = "Not Provided";
                 }
             } catch (error) {
-                console.error("Error fetching user profile:", error);
+                console.error("Error fetching profile from Users collection:", error);
             }
         }
     });
