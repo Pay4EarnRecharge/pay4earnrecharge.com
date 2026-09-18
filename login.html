@@ -22,6 +22,18 @@
     <div class="auth-card">
         <h2 id="formTitle">Login to Account</h2>
         <form id="authForm">
+            <!-- Full Name Field (Registration flow) -->
+            <div class="form-group" id="nameGroup" style="display: none;">
+                <label>Full Name</label>
+                <input type="text" id="fullName" placeholder="Enter Full Name">
+            </div>
+
+            <!-- Mobile Number Field (Registration flow) -->
+            <div class="form-group" id="mobileGroup" style="display: none;">
+                <label>Mobile Number</label>
+                <input type="tel" id="mobile" maxlength="10" placeholder="Enter 10 digit Mobile Number">
+            </div>
+
             <div class="form-group">
                 <label>Email Address</label>
                 <input type="email" id="email" required placeholder="example@mail.com">
@@ -39,12 +51,12 @@
         </div>
     </div>
 
-    <!-- Firebase Auth Integration -->
+    <!-- Firebase Auth & Firestore Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Aapka Real Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
             authDomain: "pay4earn-recharge.firebaseapp.com",
@@ -58,12 +70,15 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         let isLoginView = true;
         const formTitle = document.getElementById("formTitle");
         const submitBtn = document.getElementById("submitBtn");
         const toggleMsg = document.getElementById("toggleMsg");
         const toggleBtn = document.getElementById("toggleBtn");
+        const nameGroup = document.getElementById("nameGroup");
+        const mobileGroup = document.getElementById("mobileGroup");
 
         toggleBtn.addEventListener("click", () => {
             isLoginView = !isLoginView;
@@ -72,17 +87,21 @@
                 submitBtn.innerText = "Login";
                 toggleMsg.innerText = "Don't have an account?";
                 toggleBtn.innerText = "Create Account";
+                nameGroup.style.display = "none";
+                mobileGroup.style.display = "none";
             } else {
                 formTitle.innerText = "Create New Account";
                 submitBtn.innerText = "Register";
                 toggleMsg.innerText = "Already have an account?";
                 toggleBtn.innerText = "Login";
+                nameGroup.style.display = "block";
+                mobileGroup.style.display = "block";
             }
         });
 
-        document.getElementById("authForm").addEventListener("submit", (e) => {
+        document.getElementById("authForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById("email").value;
+            const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
 
             if (isLoginView) {
@@ -95,14 +114,34 @@
                         alert("Login Error: " + error.message);
                     });
             } else {
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        alert("Account Created Successfully!");
-                        window.location.href = "dashboard.html";
-                    })
-                    .catch((error) => {
-                        alert("Signup Error: " + error.message);
+                const fullName = document.getElementById("fullName").value.trim();
+                const mobile = document.getElementById("mobile").value.trim();
+
+                if (!fullName || !mobile) {
+                    alert("Please fill in Full Name and Mobile Number!");
+                    return;
+                }
+
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // Auth profile display name sync
+                    await updateProfile(user, { displayName: fullName });
+
+                    // Firestore DB Entry save
+                    await setDoc(doc(db, "users", user.uid), {
+                        fullName: fullName,
+                        email: email,
+                        mobile: mobile,
+                        createdAt: new Date()
                     });
+
+                    alert("Account Created Successfully!");
+                    window.location.href = "dashboard.html";
+                } catch (error) {
+                    alert("Signup Error: " + error.message);
+                }
             }
         });
     </script>
