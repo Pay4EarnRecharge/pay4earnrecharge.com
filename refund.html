@@ -7,51 +7,102 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f8f9fa; color: #333; line-height: 1.6; }
-        header { background: #fff; padding: 12px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
+        
+        /* Header */
+        header { 
+            background: #fff; 
+            padding: 12px 40px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
         .logo-area { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 20px; color: #0b192c; text-decoration: none; }
         .logo-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #0b192c; }
-        nav a { text-decoration: none; color: #333; font-weight: 500; font-size: 15px; margin-left: 20px; }
+        nav a { text-decoration: none; color: #333; font-weight: 500; font-size: 15px; margin-left: 20px; transition: color 0.3s; }
         nav a:hover { color: #3b82f6; }
+
+        /* Container */
         .container { max-width: 900px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        h1 { color: #0b192c; margin-bottom: 20px; font-size: 28px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        h1 { color: #0b192c; margin-bottom: 10px; font-size: 28px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        .last-updated { font-size: 13px; color: #64748b; margin-bottom: 20px; }
         h3 { color: #1e3e62; margin: 20px 0 8px 0; font-size: 18px; }
         p, li { color: #475569; font-size: 15px; margin-bottom: 12px; }
-        ul { margin-left: 20px; }
+        ul { margin-left: 20px; margin-bottom: 12px; }
+
+        /* Footer */
         footer { background: #0b192c; color: #94a3b8; padding: 20px; text-align: center; font-size: 14px; margin-top: 40px; }
         footer a { color: #fff; text-decoration: none; }
     </style>
 </head>
 <body>
+
+    <!-- Header -->
     <header>
         <a href="index.html" class="logo-area">
             <img src="logo.png" alt="Pay4Earn Recharge Logo" class="logo-img" onerror="this.onerror=null; this.src='logo.jpg';">
             <span>Pay4Earn Recharge</span>
         </a>
-        <nav><a href="index.html">Home</a></nav>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
     </header>
+
+    <!-- Main Content -->
     <div class="container">
         <h1>Refund & Cancellation Policy</h1>
-        <p>At <strong>Pay4Earn Recharge</strong>, customer satisfaction is our top priority. Please read our policy regarding failed recharges and refund procedures below.</p>
-        
-        <h3>1. Failed Transactions</h3>
-        <p>If your account or wallet is debited but the mobile/DTH recharge is not delivered, the transaction is marked as failed. In such cases, the debited amount will automatically be credited back to your original payment source or wallet within <strong>5 to 7 business days</strong>.</p>
+        <p class="last-updated">Last Updated: 01-01-2025</p>
 
-        <h3>2. Successful Recharges</h3>
-        <p>Once a recharge request is successfully delivered and confirmed by the respective operator (Airtel, Jio, Vi, BSNL, Tata Play, etc.), <strong>no cancellation or refund</strong> is allowed.</p>
+        <h3>1. Overview</h3>
+        <p>At <strong>Pay4Earn Recharge</strong> (Proprietor: Mr. Deepen Kumar Yadav), we are committed to providing high-quality services to our users. However, we understand that there may be instances where a service you purchased was not delivered. This Refund Policy outlines the conditions under which refunds are provided.</p>
 
-        <h3>3. Incorrect Number Input</h3>
-        <p>If you enter an incorrect mobile number or subscriber ID and the recharge is processed successfully to that number, Pay4Earn Recharge cannot reverse or refund the transaction.</p>
-
-        <h3>4. Assistance & Grievances</h3>
-        <p>For any pending transaction queries, feel free to contact our support team with your transaction ID:</p>
+        <h3>2. Eligibility for Refunds</h3>
+        <p>You may be eligible for a refund under the following condition:</p>
         <ul>
-            <li><strong>Helpline:</strong> +91 70338 14401</li>
-            <li><strong>WhatsApp:</strong> +91 70338 14401</li>
-            <li><strong>Email:</strong> deependigital@gmail.com</li>
+            <li><strong>Service Not Received:</strong> If you have successfully purchased a mobile or DTH recharge through our App/Platform, but you did not receive the service as described or within the expected time frame, you may request a refund.</li>
         </ul>
+
+        <h3>3. Non-Refundable Conditions</h3>
+        <p>Refunds will not be provided under the following circumstances:</p>
+        <ul>
+            <li><strong>Change of Mind:</strong> Refunds are not available if you simply change your mind after purchasing a recharge.</li>
+            <li><strong>Service Received as Described:</strong> If the recharge was delivered as described and confirmed by the operator, no refund will be provided.</li>
+            <li><strong>Incorrect Details Entered:</strong> If you entered an incorrect mobile number or subscriber ID and the recharge was completed successfully to that number, no refund will be issued.</li>
+            <li><strong>Issues Outside Our Control:</strong> Refunds will not be issued for problems caused by factors outside our control, such as operator-side outages or third-party network issues.</li>
+        </ul>
+
+        <h3>4. How to Request a Refund</h3>
+        <p>To request a refund, please follow these steps:</p>
+        <ul>
+            <li><strong>Through our App:</strong> You can request a refund directly from the Transaction History section of our App.</li>
+            <li><strong>Contact Support:</strong> Email our customer support team at <strong>deependigital@gmail.com</strong> within 40 days of the transaction date. Include your order ID, transaction details, and a description of the issue.</li>
+            <li><strong>Investigation:</strong> Our support team will investigate the issue with the respective operator to determine if the recharge was failed or unfulfilled.</li>
+            <li><strong>Refund Approval:</strong> If your request is approved, we will process your refund to your wallet or original payment source.</li>
+        </ul>
+
+        <h3>5. Refund Mode & Processing</h3>
+        <p><strong>Refund Mode:</strong> Once approved, the refund amount will be credited to the user's Pay4Earn Recharge Wallet. The wallet balance can be used for future transactions and services available on the App. In exceptional cases, refunds may be processed to the original payment method.</p>
+        <p><strong>Refund Processing Time:</strong> Wallet credits are generally processed quickly upon verification. External payment method refunds (if applicable) may take 5 to 7 business days to reflect in your bank account.</p>
+
+        <h3>6. Contact Us</h3>
+        <p>If you have any questions about this Refund Policy or need assistance with a refund request, please contact us at:</p>
+        <p>
+            <strong>Brand Name:</strong> Pay4Earn Recharge<br>
+            <strong>Proprietor:</strong> Mr. Deepen Kumar Yadav<br>
+            <strong>Address:</strong> At- Bhojpur, Jhala, Tedhagachh, Distt- Kishanganj, Bihar - 855101<br>
+            <strong>Helpline / WhatsApp:</strong> +91 70338 14401<br>
+            <strong>Email Support:</strong> deependigital@gmail.com
+        </p>
     </div>
+
+    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Pay4Earn Recharge. All rights reserved. | <a href="index.html">Back to Home</a></p>
     </footer>
+
 </body>
 </html>
