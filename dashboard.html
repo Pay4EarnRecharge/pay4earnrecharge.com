@@ -12,12 +12,21 @@
         .nav-menu { display: flex; gap: 15px; }
         .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; cursor: pointer; }
         .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        
         .view-section { display: none; }
         .active-view { display: block !important; }
+        
         .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; width: 100%; max-width: 320px; margin-bottom: 20px; }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
-        .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
+        
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
+        .service-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; }
+        .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -32,34 +41,106 @@
     </header>
 
     <div class="container">
-        <!-- Main Services Section -->
+        <!-- 1. SERVICES VIEW -->
         <div id="servicesView" class="view-section active-view">
             <div class="balance-card">
                 Balance: ₹ <span id="walletBalance">0.00</span>
             </div>
-            <h2 style="margin-bottom: 15px;">Welcome! Select Service</h2>
+            
+            <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome! Select Service</h2>
+            
+            <!-- Service Selection Buttons -->
             <div class="services-grid">
-                <div class="service-btn">📱 MOBILE</div>
-                <div class="service-btn">📺 DTH</div>
+                <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
+                <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
+            </div>
+
+            <!-- Mobile Recharge Form -->
+            <div id="mobileForm" class="content-card" style="display: none; margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #0b192c;">Mobile Recharge</h3>
+                <form id="mobileRechargeForm">
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" id="mobileNumber" maxlength="10" placeholder="Enter 10 digit Mobile Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Operator</label>
+                        <select id="mobileOperator" required>
+                            <option value="">-- Choose Operator --</option>
+                            <option value="Jio">Jio</option>
+                            <option value="Airtel">Airtel</option>
+                            <option value="Vi">Vodafone Idea (Vi)</option>
+                            <option value="BSNL">BSNL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Recharge Amount</label>
+                        <input type="number" id="mobileAmount" placeholder="Enter Amount (₹)" required>
+                    </div>
+                    <button type="submit" class="pay-now-btn">PAY NOW</button>
+                </form>
+            </div>
+
+            <!-- DTH Recharge Form -->
+            <div id="dthForm" class="content-card" style="display: none; margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #0b192c;">DTH Recharge</h3>
+                <form id="dthRechargeForm">
+                    <div class="form-group">
+                        <label>Customer ID / VC Number</label>
+                        <input type="text" id="dthNumber" placeholder="Enter DTH Customer ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Operator</label>
+                        <select id="dthOperator" required>
+                            <option value="">-- Choose Operator --</option>
+                            <option value="Tata Play">Tata Play</option>
+                            <option value="Airtel DTH">Airtel Digital TV</option>
+                            <option value="Dish TV">Dish TV</option>
+                            <option value="Sun Direct">Sun Direct</option>
+                            <option value="d2h">d2h</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Recharge Amount</label>
+                        <input type="number" id="dthAmount" placeholder="Enter Amount (₹)" required>
+                    </div>
+                    <button type="submit" class="pay-now-btn">PAY NOW</button>
+                </form>
             </div>
         </div>
 
-        <!-- Profile Section -->
+        <!-- 2. PROFILE VIEW -->
         <div id="profileView" class="view-section content-card">
-            <h2>Retailer Profile</h2>
-            <p><strong>Name:</strong> <span id="userDisplayName">Loading...</span></p>
-            <p><strong>Email:</strong> <span id="userEmailText">Loading...</span></p>
-            <p><strong>Mobile:</strong> <span id="userMobileText">Loading...</span></p>
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
+            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
+            <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
+            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
+            <p style="margin-bottom: 8px;"><strong>Business Entity:</strong> Digital Shop CSP Traders</p>
+            <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Active Merchant / Retailer</p>
         </div>
     </div>
 
+    <!-- UI View Switcher Script -->
     <script>
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
         }
+
+        // Button click par Form open karne ka logic
+        function openService(type) {
+            document.getElementById('mobileForm').style.display = 'none';
+            document.getElementById('dthForm').style.display = 'none';
+
+            if (type === 'mobile') {
+                document.getElementById('mobileForm').style.display = 'block';
+            } else if (type === 'dth') {
+                document.getElementById('dthForm').style.display = 'block';
+            }
+        }
     </script>
 
+    <!-- Firebase Realtime Auth & Profile Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -84,26 +165,39 @@
             if (!user) {
                 window.location.href = "login.html";
             } else {
-                document.getElementById("userEmailText").innerText = user.email;
+                const userDisplayNameElem = document.getElementById("userDisplayName");
+                const userEmailElem = document.getElementById("userEmailText");
+                const userMobileElem = document.getElementById("userMobileText");
+                const walletBalanceElem = document.getElementById("walletBalance");
+
+                if (userEmailElem) userEmailElem.innerText = user.email;
+
                 try {
                     const userDocRef = doc(db, "Users", user.uid);
                     const docSnap = await getDoc(userDocRef);
+
                     if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        document.getElementById("userDisplayName").innerText = data.fullName || "N/A";
-                        document.getElementById("userMobileText").innerText = data.mobile || "N/A";
-                        if(data.walletBalance !== undefined) {
-                            document.getElementById("walletBalance").innerText = parseFloat(data.walletBalance).toFixed(2);
+                        const userData = docSnap.data();
+                        if (userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || "Not Provided";
+                        if (userMobileElem) userMobileElem.innerText = userData.mobile || "Not Provided";
+                        if (walletBalanceElem && userData.walletBalance !== undefined) {
+                            walletBalanceElem.innerText = parseFloat(userData.walletBalance).toFixed(2);
                         }
+                    } else {
+                        if (userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
+                        if (userMobileElem) userMobileElem.innerText = "Not Provided";
                     }
-                } catch (e) {
-                    console.error("Profile load error:", e);
+                } catch (error) {
+                    console.error("Profile load error:", error);
                 }
             }
         });
 
-        document.getElementById("logoutBtn").addEventListener("click", () => {
-            signOut(auth).then(() => window.location.href = "login.html");
+        document.getElementById("logoutBtn").addEventListener("click", (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            });
         });
     </script>
 </body>
