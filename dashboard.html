@@ -1,335 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Pay4Earn Recharge</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f1f5f9; color: #333; }
+<!-- Retailer Profile HTML Structure -->
+<div id="profileView" class="view-section content-card">
+    <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
+    <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
+    <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
+    <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
+    <p style="margin-bottom: 8px;"><strong>Business Entity:</strong> Digital Shop CSP Traders</p>
+    <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Active Merchant / Retailer</p>
+</div>
 
-        header { background: #0b192c; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: bold; font-size: 20px; }
-        .nav-menu { display: flex; gap: 15px; }
-        .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; }
-        .nav-menu a:hover { text-decoration: underline; color: #38bdf8; }
+<!-- Firebase Real-time Profile Fetch Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+    const firebaseConfig = {
+        apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
+        authDomain: "pay4earn-recharge.firebaseapp.com",
+        databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
+        projectId: "pay4earn-recharge",
+        storageBucket: "pay4earn-recharge.firebasestorage.app",
+        messagingSenderId: "57674434302",
+        appId: "1:57674434302:web:184a566300e1099de9c7af",
+        measurementId: "G-8Q5NP1PKC4"
+    };
 
-        .view-section { display: none; }
-        .active-view { display: block; }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        .top-bar { display: flex; margin-bottom: 20px; }
-        .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; width: 100%; max-width: 320px; }
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = "login.html";
+        } else {
+            const userDisplayNameElem = document.getElementById("userDisplayName");
+            const userEmailElem = document.getElementById("userEmailText");
+            const userMobileElem = document.getElementById("userMobileText");
 
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
-        .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
-        .service-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
+            try {
+                // Fetch document matching current User UID
+                const userDocRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userDocRef);
 
-        .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: bold; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; }
-        .browse-plan-btn { background: #64748b; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-top: 5px; }
-        .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-
-        .tx-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .tx-section h3 { margin-bottom: 15px; color: #0b192c; }
-        .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-        .tx-table th, .tx-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
-        .tx-table th { background: #f8f9fa; color: #475569; }
-        .badge-success { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
-        .empty-row { text-align: center; color: #64748b; padding: 20px !important; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="logo">Pay4Earn Recharge</div>
-        <div class="nav-menu">
-            <a onclick="showSection('bankView')">Bank Details</a>
-            <a onclick="showSection('servicesView')">Services</a>
-            <a onclick="showSection('referView')">Refer & Earn</a>
-            <a onclick="showSection('profileView')">Profile</a>
-            <a onclick="showSection('reportsView')">Reports</a>
-            <a id="logoutBtn" style="color: #f87171;">Logout</a>
-        </div>
-    </header>
-
-    <div class="container">
-
-        <!-- 1. SERVICES VIEW -->
-        <div id="servicesView" class="view-section active-view">
-            <div class="top-bar">
-                <div class="balance-card">
-                    Balance: ₹ <span id="walletBalance">0.00</span>
-                </div>
-            </div>
-
-            <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome ! Select Service</h2>
-
-            <div class="services-grid">
-                <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
-                <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
-                <div class="service-btn" onclick="alert('Broadband service coming soon!')">🌐 Broadband</div>
-                <div class="service-btn" onclick="alert('Postpaid service coming soon!')">📄 POSTPAID</div>
-                <div class="service-btn" onclick="alert('Landline service coming soon!')">☎️ Landline</div>
-                <div class="service-btn" onclick="alert('Electricity service coming soon!')">💡 ELECTRICITY</div>
-                <div class="service-btn" onclick="alert('Water Bill service coming soon!')">💧 Water Bill</div>
-                <div class="service-btn" onclick="alert('Gas service coming soon!')">🔥 GAS</div>
-                <div class="service-btn" onclick="alert('Insurance service coming soon!')">🛡️ INSURANCE</div>
-            </div>
-
-            <div id="mobileForm" class="content-card" style="display: none;">
-                <h3 style="margin-bottom: 15px; color: #0b192c;">Mobile Recharge</h3>
-                <form id="mobileRechargeForm">
-                    <div class="form-group">
-                        <label>Mobile Number</label>
-                        <input type="text" id="mobileNumber" maxlength="10" placeholder="Enter 10 digit Mobile Number" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Select Operator</label>
-                        <select id="mobileOperator" required>
-                            <option value="">-- Choose Operator --</option>
-                            <option value="Jio">Jio</option>
-                            <option value="Airtel">Airtel</option>
-                            <option value="Vi">Vodafone Idea (Vi)</option>
-                            <option value="BSNL">BSNL</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Recharge Amount</label>
-                        <input type="number" id="mobileAmount" placeholder="Enter Amount (₹)" required>
-                        <button type="button" class="browse-plan-btn" onclick="alert('Plans list loading...')">Browse Plan</button>
-                    </div>
-                    <button type="submit" class="pay-now-btn">PAY NOW</button>
-                </form>
-            </div>
-
-            <div id="dthForm" class="content-card" style="display: none;">
-                <h3 style="margin-bottom: 15px; color: #0b192c;">DTH Recharge</h3>
-                <form id="dthRechargeForm">
-                    <div class="form-group">
-                        <label>Customer ID / VC Number</label>
-                        <input type="text" id="dthNumber" placeholder="Enter DTH Customer ID" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Select Operator</label>
-                        <select id="dthOperator" required>
-                            <option value="">-- Choose Operator --</option>
-                            <option value="Tata Play">Tata Play</option>
-                            <option value="Airtel DTH">Airtel Digital TV</option>
-                            <option value="Dish TV">Dish TV</option>
-                            <option value="Sun Direct">Sun Direct</option>
-                            <option value="d2h">d2h</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Recharge Amount</label>
-                        <input type="number" id="dthAmount" placeholder="Enter Amount (₹)" required>
-                        <button type="button" class="browse-plan-btn" onclick="alert('DTH Plan Info...')">Browse Plan / Info</button>
-                    </div>
-                    <button type="submit" class="pay-now-btn">PAY NOW</button>
-                </form>
-            </div>
-
-            <div class="tx-section">
-                <h3>Last 10 Transactions</h3>
-                <div style="overflow-x: auto;">
-                    <table class="tx-table">
-                        <thead>
-                            <tr>
-                                <th>S#</th>
-                                <th>Date</th>
-                                <th>Reqid</th>
-                                <th>Provider</th>
-                                <th>Number</th>
-                                <th>Amt</th>
-                                <th>Your Cost</th>
-                                <th>Status</th>
-                                <th>Op. Txn</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionBody">
-                            <tr id="emptyRow">
-                                <td colspan="9" class="empty-row">No transactions found yet.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. BANK DETAILS VIEW -->
-        <div id="bankView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Bank Details for Add Money</h2>
-            <p style="margin-bottom: 8px;"><strong>Account Holder Name:</strong> DEEPEN KUMAR YADAV</p>
-            <p style="margin-bottom: 8px;"><strong>Bank Name:</strong> BANDHAN BANK</p>
-            <p style="margin-bottom: 8px;"><strong>Account Code:</strong> 10210008194287</p>
-            <p style="margin-bottom: 8px;"><strong>IFSC Code:</strong> BDBL0001394</p>
-            <p style="margin-bottom: 8px;"><strong>UPI ID:</strong> deepen5050@ybl</p>
-            <p style="color: #64748b; font-size: 13px; margin-top: 15px;">Note: Payment karne ke baad screenshot support pe bhejein balance add karne ke liye.</p>
-        </div>
-
-        <!-- 3. REFER & EARN VIEW -->
-        <div id="referView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Refer & Earn</h2>
-            <p style="margin-bottom: 12px; color: #475569;">Share your referral link with retailers and friends to earn instant commission on every recharge.</p>
-            <div class="form-group">
-                <label>Your Referral Link</label>
-                <input type="text" readonly value="https://pay4earnrecharge.github.io/pay4earnrecharge.com/login.html">
-            </div>
-        </div>
-
-        <!-- 4. RETAILER PROFILE VIEW -->
-        <div id="profileView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
-            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Business Entity:</strong> Digital Shop CSP Traders</p>
-            <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Active Merchant / Retailer</p>
-        </div>
-
-        <!-- 5. REPORTS VIEW -->
-        <div id="reportsView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Recharge & Transaction Reports</h2>
-            <p style="color: #64748b; margin-bottom: 15px;">All detailed recharge logs and transaction summary are updated in real-time.</p>
-        </div>
-
-    </div>
-
-    <script>
-        let txCounter = 0;
-
-        function showSection(sectionId) {
-            document.querySelectorAll('.view-section').forEach(sec => {
-                sec.classList.remove('active-view');
-            });
-            document.getElementById(sectionId).classList.add('active-view');
-        }
-
-        function openService(type) {
-            document.getElementById('mobileForm').style.display = 'none';
-            document.getElementById('dthForm').style.display = 'none';
-
-            if(type === 'mobile') {
-                document.getElementById('mobileForm').style.display = 'block';
-            } else if(type === 'dth') {
-                document.getElementById('dthForm').style.display = 'block';
-            }
-        }
-
-        function addTransactionRow(provider, number, amount) {
-            const emptyRow = document.getElementById('emptyRow');
-            if (emptyRow) emptyRow.remove();
-
-            txCounter++;
-            const tbody = document.getElementById('transactionBody');
-            const dateStr = new Date().toLocaleDateString('en-GB');
-            const reqId = Math.floor(100000000 + Math.random() * 900000000);
-            const opTxn = Math.floor(1000000000 + Math.random() * 9000000000);
-            const cost = (amount * 0.985).toFixed(2); 
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${txCounter}</td>
-                <td>${dateStr}</td>
-                <td>${reqId}</td>
-                <td>${provider}</td>
-                <td>${number}</td>
-                <td>₹ ${parseFloat(amount).toFixed(2)}</td>
-                <td>₹ ${cost}</td>
-                <td><span class="badge-success">Success</span></td>
-                <td>${opTxn}</td>
-            `;
-
-            tbody.insertBefore(tr, tbody.firstChild);
-        }
-
-        document.getElementById('mobileRechargeForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const provider = document.getElementById('mobileOperator').value;
-            const number = document.getElementById('mobileNumber').value;
-            const amount = document.getElementById('mobileAmount').value;
-
-            addTransactionRow(provider, number, amount);
-            alert(`Recharge Request Submitted Successfully for ${number}!`);
-            document.getElementById('mobileRechargeForm').reset();
-            document.getElementById('mobileForm').style.display = 'none';
-        });
-
-        document.getElementById('dthRechargeForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const provider = document.getElementById('dthOperator').value;
-            const number = document.getElementById('dthNumber').value;
-            const amount = document.getElementById('dthAmount').value;
-
-            addTransactionRow(provider, number, amount);
-            alert(`DTH Recharge Request Submitted Successfully for Customer ID: ${number}!`);
-            document.getElementById('dthRechargeForm').reset();
-            document.getElementById('dthForm').style.display = 'none';
-        });
-    </script>
-
-    <!-- Firebase Session & Registration Data Sync -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
-            authDomain: "pay4earn-recharge.firebaseapp.com",
-            databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
-            projectId: "pay4earn-recharge",
-            storageBucket: "pay4earn-recharge.firebasestorage.app",
-            messagingSenderId: "57674434302",
-            appId: "1:57674434302:web:184a566300e1099de9c7af",
-            measurementId: "G-8Q5NP1PKC4"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = "login.html";
-            } else {
-                const userEmailElem = document.getElementById("userEmailText");
-                const userDisplayNameElem = document.getElementById("userDisplayName");
-                const userMobileElem = document.getElementById("userMobileText");
-
-                if(userEmailElem) userEmailElem.innerText = user.email;
-
-                try {
-                    const userDocRef = doc(db, "users", user.uid);
-                    const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
                     
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        if(userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || user.displayName || "User";
-                        if(userMobileElem) userMobileElem.innerText = userData.mobile || "Not Provided";
-                    } else {
-                        if(userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
-                        if(userMobileElem) userMobileElem.innerText = "Not Provided";
-                    }
-                } catch(e) {
-                    console.error("Error loading user profile:", e);
+                    // Display EXACT registered values from Firestore
+                    userDisplayNameElem.innerText = userData.fullName || "Not Provided";
+                    userEmailElem.innerText = userData.email || user.email;
+                    userMobileElem.innerText = userData.mobile || "Not Provided";
+                } else {
+                    // Fallback to Auth baseline if document doesn't exist
+                    userDisplayNameElem.innerText = user.displayName || "Not Provided";
+                    userEmailElem.innerText = user.email;
+                    userMobileElem.innerText = "Not Provided";
                 }
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
             }
-        });
+        }
+    });
 
-        document.getElementById("logoutBtn").addEventListener("click", (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                alert("Logged Out Successfully!");
-                window.location.href = "login.html";
-            }).catch((error) => {
-                alert("Logout Error: " + error.message);
-            });
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        signOut(auth).then(() => {
+            window.location.href = "login.html";
         });
-    </script>
-</body>
-</html>
+    });
+</script>
