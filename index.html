@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f8f9fa; color: #333; line-height: 1.6; scroll-behavior: smooth; }
         
-        /* Header / Navbar - Center Aligned Logo */
+        /* Header / Navbar */
         header { 
             background: #fff; 
             padding: 10px 40px 15px 40px; 
@@ -35,7 +35,6 @@
             text-align: center;
         }
         
-        /* Center Logo Styling - 6dp Up & 6dp Right Shift */
         .logo-img { 
             width: 70px; 
             height: 70px; 
@@ -43,8 +42,8 @@
             object-fit: cover; 
             border: 3px solid #0b192c; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            margin-top: -6px;  /* Shifts logo 6dp UP */
-            margin-left: 6px;  /* Shifts logo 6dp RIGHT */
+            margin-top: -6px;
+            margin-left: 6px;
         }
         
         nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; }
@@ -52,7 +51,6 @@
         nav a:hover { color: #3b82f6; }
         .get-started-btn { background: #0b192c; color: #fff !important; padding: 8px 18px; border-radius: 5px; cursor: pointer; }
 
-        /* Responsive Layout for Desktop / Laptop */
         @media (min-width: 768px) {
             header {
                 flex-direction: row;
@@ -65,7 +63,7 @@
             }
         }
 
-        /* Hero Section - Blue Aquamarine Background */
+        /* Hero Section */
         .hero { background: linear-gradient(135deg, #008080, #7fffd4); color: #0b192c; text-align: center; padding: 90px 20px; }
         .hero h1 { font-size: 40px; margin-bottom: 20px; font-weight: 700; color: #0b192c; }
         .hero p { font-size: 17px; max-width: 700px; margin: 0 auto 30px auto; color: #1e3e62; font-weight: 500; }
@@ -91,18 +89,22 @@
         .service-card ul li { margin-bottom: 10px; color: #475569; font-size: 15px; }
         .action-btn { display: inline-block; background: #2563eb; color: #fff; padding: 10px 22px; border-radius: 6px; text-decoration: none; margin-top: 15px; font-weight: 500; }
 
-        /* FAQs */
+        /* FAQs Accordion Styles */
         .faq-item { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 12px; text-align: left; overflow: hidden; }
-        .faq-question { padding: 18px; font-weight: 600; color: #0b192c; background: #fff; cursor: pointer; }
-        .faq-answer { padding: 18px; background: #f8f9fa; border-top: 1px solid #e2e8f0; color: #475569; font-size: 14px; }
+        .faq-question { padding: 18px; font-weight: 600; color: #0b192c; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .faq-question::after { content: '➕'; font-size: 14px; transition: transform 0.3s; }
+        .faq-item.active .faq-question::after { content: '➖'; }
+        .faq-answer { padding: 0 18px; max-height: 0; overflow: hidden; background: #f8f9fa; border-top: 0px solid #e2e8f0; color: #475569; font-size: 14px; transition: all 0.3s ease-out; }
+        .faq-item.active .faq-answer { padding: 18px; max-height: 200px; border-top-width: 1px; }
 
         /* Footer */
         footer { background: #0b192c; color: #94a3b8; padding: 50px 20px 20px 20px; text-align: left; }
-        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; margin-bottom: 30px; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 30px; }
         .footer-col h4 { color: #fff; margin-bottom: 15px; font-size: 16px; }
         .footer-col ul { list-style: none; }
         .footer-col ul li { margin-bottom: 8px; }
-        .footer-col ul li a { color: #94a3b8; text-decoration: none; font-size: 14px; }
+        .footer-col ul li a { color: #94a3b8; text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .footer-col ul li a:hover { color: #fff; }
         .footer-bottom { max-width: 1200px; margin: 0 auto; border-top: 1px solid #1e3e62; padding-top: 20px; text-align: center; font-size: 13px; }
     </style>
 </head>
@@ -218,7 +220,7 @@
             
             <div class="faq-item">
                 <div class="faq-question">Is Pay4Earn Recharge safe and secure?</div>
-                <div class="faq-answer">Yes, Pay4Earn Recharge industry-standard security practices with encrypted payment gateways. All transactions are 100% secure and protected. We never store your sensitive payment information. </div>
+                <div class="faq-answer">Yes, Pay4Earn Recharge follows industry-standard security practices with encrypted payment gateways. All transactions are 100% secure and protected. We never store your sensitive payment information.</div>
             </div>
             <div class="faq-item">
                 <div class="faq-question">Which mobile operators do you support?</div>
@@ -232,15 +234,15 @@
                 <div class="faq-question">How can I contact customer support?</div>
                 <div class="faq-answer">Our 24/7 customer support is available via phone and WhatsApp +91 70338 14401. You can call us or message us anytime, and our team will assist you promptly.</div>
             </div>
-             <div class="faq-item">
+            <div class="faq-item">
                 <div class="faq-question">How long does a recharge take?</div>
                 <div class="faq-answer">Most recharges are processed instantly and you receive confirmation within seconds. In rare cases, it may take 2-5 minutes due to operator delays, but you'll always receive instant notification once processed.</div>
             </div>
-             <div class="faq-item">
+            <div class="faq-item">
                 <div class="faq-question">What if my recharge fails?</div>
                 <div class="faq-answer">If a recharge fails, your money will be automatically refunded to your original payment method within 5-7 business days. You can also contact our support team for immediate assistance.</div>
             </div>
-             <div class="faq-item">
+            <div class="faq-item">
                 <div class="faq-question">Do you charge any extra fees?</div>
                 <div class="faq-answer">No, we don't apply any charges. The amount you see is the exact amount you pay. Recharge at face value with complete transparency and zero extra charges.</div>
             </div>
@@ -294,6 +296,15 @@
                 </ul>
             </div>
             <div class="footer-col">
+                <h4>Legal & Policies</h4>
+                <ul>
+                    <li><a href="terms.html">Terms & Conditions</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="refund.html">Refund Policy / Cancellation Policy</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
                 <h4>Contact Info</h4>
                 <p style="font-size: 14px; margin-bottom: 5px;">Phone: +91 70338 14401</p>
                 <p style="font-size: 14px;">Email: deependigital@gmail.com</p>
@@ -304,12 +315,30 @@
         </div>
     </footer>
 
+    <!-- FAQ Accordion JS -->
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                
+                // Close other items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    if (item !== faqItem) {
+                        item.classList.remove('active');
+                    }
+                });
+
+                // Toggle current item
+                faqItem.classList.toggle('active');
+            });
+        });
+    </script>
+
     <!-- Firebase Authentication & Dynamic Redirect Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Real Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
             authDomain: "pay4earn-recharge.firebaseapp.com",
@@ -326,7 +355,6 @@
 
         let currentUser = null;
 
-        // User Status Check
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             const servicesSection = document.getElementById("services");
@@ -337,19 +365,15 @@
             }
         });
 
-        // Common Action Handler for Get Started Buttons
         function handleGetStartedClick(event) {
             if (event) event.preventDefault();
             if (currentUser) {
-                // Logged-in: Direct Dashboard par bhejein
                 window.location.href = "dashboard.html";
             } else {
-                // Not Logged-in: Login/Register page par redirect karein
                 window.location.href = "login.html";
             }
         }
 
-        // DOM Load hone ke baad Event Listeners attach karein
         document.addEventListener("DOMContentLoaded", () => {
             const navBtn = document.getElementById("navGetStartedBtn");
             const heroBtn = document.getElementById("heroGetStartedBtn");
