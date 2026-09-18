@@ -13,7 +13,7 @@
         .logo { font-weight: bold; font-size: 20px; }
         .nav-menu { display: flex; gap: 15px; }
         .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; }
-        .nav-menu a:hover { text-decoration: underline; }
+        .nav-menu a:hover { text-decoration: underline; color: #38bdf8; }
 
         /* Container Layout */
         .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
@@ -45,6 +45,7 @@
         .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
         .tx-table th, .tx-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
         .tx-table th { background: #f8f9fa; color: #475569; }
+        .badge-success { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .empty-row { text-align: center; color: #64748b; padding: 20px !important; }
     </style>
 </head>
@@ -65,12 +66,12 @@
 
     <div class="container">
 
-        <!-- 1. SERVICES VIEW (DEFAULT MAIN DASHBOARD) -->
+        <!-- 1. SERVICES VIEW (MAIN DASHBOARD) -->
         <div id="servicesView" class="view-section active-view">
             <!-- Balance Section -->
             <div class="top-bar">
                 <div class="balance-card">
-                    Balance: ₹ 0.00
+                    Balance: ₹ <span id="walletBalance">0.00</span>
                 </div>
             </div>
 
@@ -95,21 +96,21 @@
                 <form id="mobileRechargeForm">
                     <div class="form-group">
                         <label>Mobile Number</label>
-                        <input type="text" maxlength="10" placeholder="Enter 10 digit Mobile Number" required>
+                        <input type="text" id="mobileNumber" maxlength="10" placeholder="Enter 10 digit Mobile Number" required>
                     </div>
                     <div class="form-group">
                         <label>Select Operator</label>
-                        <select required>
+                        <select id="mobileOperator" required>
                             <option value="">-- Choose Operator --</option>
-                            <option value="jio">Jio</option>
-                            <option value="airtel">Airtel</option>
-                            <option value="vi">Vodafone Idea (Vi)</option>
-                            <option value="bsnl">BSNL</option>
+                            <option value="Jio">Jio</option>
+                            <option value="Airtel">Airtel</option>
+                            <option value="Vi">Vodafone Idea (Vi)</option>
+                            <option value="BSNL">BSNL</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Recharge Amount</label>
-                        <input type="number" placeholder="Enter Amount (₹)" required>
+                        <input type="number" id="mobileAmount" placeholder="Enter Amount (₹)" required>
                         <button type="button" class="browse-plan-btn" onclick="alert('Plans list loading...')">Browse Plan</button>
                     </div>
                     <button type="submit" class="pay-now-btn">PAY NOW</button>
@@ -122,29 +123,29 @@
                 <form id="dthRechargeForm">
                     <div class="form-group">
                         <label>Customer ID / VC Number</label>
-                        <input type="text" placeholder="Enter DTH Customer ID" required>
+                        <input type="text" id="dthNumber" placeholder="Enter DTH Customer ID" required>
                     </div>
                     <div class="form-group">
                         <label>Select Operator</label>
-                        <select required>
+                        <select id="dthOperator" required>
                             <option value="">-- Choose Operator --</option>
-                            <option value="tataplay">Tata Play</option>
-                            <option value="airteldth">Airtel Digital TV</option>
-                            <option value="dishtv">Dish TV</option>
-                            <option value="sundirect">Sun Direct</option>
+                            <option value="Tata Play">Tata Play</option>
+                            <option value="Airtel DTH">Airtel Digital TV</option>
+                            <option value="Dish TV">Dish TV</option>
+                            <option value="Sun Direct">Sun Direct</option>
                             <option value="d2h">d2h</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Recharge Amount</label>
-                        <input type="number" placeholder="Enter Amount (₹)" required>
+                        <input type="number" id="dthAmount" placeholder="Enter Amount (₹)" required>
                         <button type="button" class="browse-plan-btn" onclick="alert('DTH Plan Info...')">Browse Plan / Info</button>
                     </div>
                     <button type="submit" class="pay-now-btn">PAY NOW</button>
                 </form>
             </div>
 
-            <!-- Last 10 Transactions Table (Web App Real-time Entries) -->
+            <!-- Last 10 Transactions Table -->
             <div class="tx-section">
                 <h3>Last 10 Transactions</h3>
                 <div style="overflow-x: auto;">
@@ -163,7 +164,7 @@
                             </tr>
                         </thead>
                         <tbody id="transactionBody">
-                            <tr>
+                            <tr id="emptyRow">
                                 <td colspan="9" class="empty-row">No transactions found yet.</td>
                             </tr>
                         </tbody>
@@ -205,13 +206,15 @@
         <!-- 5. REPORTS VIEW -->
         <div id="reportsView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Recharge & Transaction Reports</h2>
-            <p style="color: #64748b;">All detailed recharge logs and date-wise summary will appear here.</p>
+            <p style="color: #64748b; margin-bottom: 15px;">All detailed recharge logs and transaction summary are updated in real-time.</p>
         </div>
 
     </div>
 
-    <!-- UI Logic Scripts -->
+    <!-- UI Logic & Local Transaction Storage -->
     <script>
+        let txCounter = 0;
+
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => {
                 sec.classList.remove('active-view');
@@ -230,14 +233,55 @@
             }
         }
 
+        function addTransactionRow(provider, number, amount) {
+            const emptyRow = document.getElementById('emptyRow');
+            if (emptyRow) emptyRow.remove();
+
+            txCounter++;
+            const tbody = document.getElementById('transactionBody');
+            const dateStr = new Date().toLocaleDateString('en-GB');
+            const reqId = Math.floor(100000000 + Math.random() * 900000000);
+            const opTxn = Math.floor(1000000000 + Math.random() * 9000000000);
+            const cost = (amount * 0.985).toFixed(2); // Estimated cost
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${txCounter}</td>
+                <td>${dateStr}</td>
+                <td>${reqId}</td>
+                <td>${provider}</td>
+                <td>${number}</td>
+                <td>₹ ${parseFloat(amount).toFixed(2)}</td>
+                <td>₹ ${cost}</td>
+                <td><span class="badge-success">Success</span></td>
+                <td>${opTxn}</td>
+            `;
+
+            tbody.insertBefore(tr, tbody.firstChild);
+        }
+
         document.getElementById('mobileRechargeForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Processing Mobile Recharge Request...');
+            const provider = document.getElementById('mobileOperator').value;
+            const number = document.getElementById('mobileNumber').value;
+            const amount = document.getElementById('mobileAmount').value;
+
+            addTransactionRow(provider, number, amount);
+            alert(`Recharge Request Submitted Successfully for ${number}!`);
+            document.getElementById('mobileRechargeForm').reset();
+            document.getElementById('mobileForm').style.display = 'none';
         });
 
         document.getElementById('dthRechargeForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Processing DTH Recharge Request...');
+            const provider = document.getElementById('dthOperator').value;
+            const number = document.getElementById('dthNumber').value;
+            const amount = document.getElementById('dthAmount').value;
+
+            addTransactionRow(provider, number, amount);
+            alert(`DTH Recharge Request Submitted Successfully for Customer ID: ${number}!`);
+            document.getElementById('dthRechargeForm').reset();
+            document.getElementById('dthForm').style.display = 'none';
         });
     </script>
 
