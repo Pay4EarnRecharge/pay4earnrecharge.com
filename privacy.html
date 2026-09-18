@@ -7,51 +7,92 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f8f9fa; color: #333; line-height: 1.6; }
-        header { background: #fff; padding: 12px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
+        
+        /* Header */
+        header { 
+            background: #fff; 
+            padding: 12px 40px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
         .logo-area { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 20px; color: #0b192c; text-decoration: none; }
         .logo-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #0b192c; }
         nav a { text-decoration: none; color: #333; font-weight: 500; font-size: 15px; margin-left: 20px; }
         nav a:hover { color: #3b82f6; }
+
+        /* Content Container */
         .container { max-width: 900px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         h1 { color: #0b192c; margin-bottom: 20px; font-size: 28px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
         h3 { color: #1e3e62; margin: 20px 0 8px 0; font-size: 18px; }
         p, li { color: #475569; font-size: 15px; margin-bottom: 12px; }
-        ul { margin-left: 20px; }
+        ul { margin-left: 20px; margin-bottom: 12px; }
+
+        /* Footer */
         footer { background: #0b192c; color: #94a3b8; padding: 20px; text-align: center; font-size: 14px; margin-top: 40px; }
         footer a { color: #fff; text-decoration: none; }
     </style>
 </head>
 <body>
+
+    <!-- Header / Navbar -->
     <header>
         <a href="index.html" class="logo-area">
             <img src="logo.png" alt="Pay4Earn Recharge Logo" class="logo-img" onerror="this.onerror=null; this.src='logo.jpg';">
             <span>Pay4Earn Recharge</span>
         </a>
-        <nav><a href="index.html">Home</a></nav>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
     </header>
+
+    <!-- Main Privacy Content -->
     <div class="container">
         <h1>Privacy Policy</h1>
-        <p>At <strong>Pay4Earn Recharge</strong>, we value your trust and are committed to protecting your personal information. This Privacy Policy details how we collect, use, and safeguard your data.</p>
+        <p>At <strong>Pay4Earn Recharge</strong> (Operated by Digital Shop CSP Traders | Proprietor: Mr. Deepen Kumar Yadav), we value your trust and are committed to protecting your personal information. This Privacy Policy details how we collect, use, and safeguard your data when you use our mobile and DTH recharge services.</p>
         
         <h3>1. Information We Collect</h3>
-        <p>To deliver recharge services, we collect minimal personal information including:</p>
+        <p>To process your recharges and deliver seamless support, we collect the following minimal user information:</p>
         <ul>
-            <li>Mobile Phone Numbers and DTH Subscriber IDs.</li>
-            <li>Email Address and Contact Information.</li>
-            <li>Transaction reference IDs and order history.</li>
+            <li>Mobile Phone Numbers and DTH Subscriber IDs for recharge execution.</li>
+            <li>Email addresses and contact details provided during user registration.</li>
+            <li>Transaction history, reference IDs, and payment status details.</li>
         </ul>
 
         <h3>2. How We Use Your Information</h3>
-        <p>Your details are strictly used to process recharge transactions, send confirmation messages, provide 24/7 support, and notify you of system updates.</p>
+        <p>Your details are strictly utilized to:</p>
+        <ul>
+            <li>Execute instant mobile and DTH recharge orders accurately.</li>
+            <li>Send transaction updates, confirmations, and alerts.</li>
+            <li>Provide 24/7 customer support and resolve transaction disputes.</li>
+            <li>Ensure legal compliance and maintain account security.</li>
+        </ul>
 
-        <h3>3. Data Protection & Security</h3>
-        <p>We use industry-standard encryption protocols and secure payment gateway integrations. We never store your card PINs, passwords, or CVVs on our servers.</p>
+        <h3>3. Data Protection & Encryption</h3>
+        <p>We enforce strict, industry-standard security protocols to protect your personal information. All transaction workflows integrated via encrypted payment gateways adhere to high-level security standards. We never store sensitive banking credentials, credit/debit card numbers, PINs, or CVV details on our servers.</p>
 
-        <h3>4. Contact Privacy Officer</h3>
-        <p>If you have any questions regarding your personal privacy, contact us at <strong>deependigital@gmail.com</strong> or call <strong>+91 70338 14401</strong>.</p>
+        <h3>4. Data Sharing & Third-Party Services</h3>
+        <p>We do not sell, rent, or lease your personal information to third parties. Data is shared exclusively with authorized telecom/DTH operators and certified payment gateway providers solely to complete your requested transactions.</p>
+
+        <h3>5. Contact Privacy Officer</h3>
+        <p>If you have any questions, concerns, or requests regarding this Privacy Policy, please contact our support team:</p>
+        <p>
+            <strong>Brand Name:</strong> Pay4Earn Recharge<br>
+            <strong>Email Support:</strong> deependigital@gmail.com<br>
+            <strong>Helpline / WhatsApp:</strong> +91 70338 14401<br>
+            <strong>Address:</strong> At- Bhojpur, Jhala, Tedhagachh, Distt- Kishanganj, Bihar - 855101
+        </p>
     </div>
+
+    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Pay4Earn Recharge. All rights reserved. | <a href="index.html">Back to Home</a></p>
     </footer>
+
 </body>
 </html>
