@@ -316,37 +316,35 @@
 
         // User Status Check
         onAuthStateChanged(auth, (user) => {
+            currentUser = user;
             const servicesSection = document.getElementById("services");
             if (user) {
-                currentUser = user;
-                // Logged-in: Services section dikhayen
                 if (servicesSection) servicesSection.style.display = "block";
             } else {
-                currentUser = null;
-                // Logged-out: Services section chhupayen
                 if (servicesSection) servicesSection.style.display = "none";
             }
         });
 
         // Common Action Handler for Get Started Buttons
         function handleGetStartedClick(event) {
-            event.preventDefault();
+            if (event) event.preventDefault();
             if (currentUser) {
-                // User Logged In: Direct Services par scroll karein
-                const servicesSection = document.getElementById("services");
-                if (servicesSection) {
-                    servicesSection.style.display = "block";
-                    servicesSection.scrollIntoView({ behavior: 'smooth' });
-                }
+                // Logged-in: Direct Dashboard par bhejein
+                window.location.href = "dashboard.html";
             } else {
-                // User Not Logged In: Create Account / Login page par redirect karein
+                // Not Logged-in: Login/Register page par redirect karein
                 window.location.href = "login.html";
             }
         }
 
-        // Attach event listeners to both buttons
-        document.getElementById("navGetStartedBtn").addEventListener("click", handleGetStartedClick);
-        document.getElementById("heroGetStartedBtn").addEventListener("click", handleGetStartedClick);
+        // DOM Load hone ke baad Event Listeners attach karein
+        document.addEventListener("DOMContentLoaded", () => {
+            const navBtn = document.getElementById("navGetStartedBtn");
+            const heroBtn = document.getElementById("heroGetStartedBtn");
+
+            if (navBtn) navBtn.addEventListener("click", handleGetStartedClick);
+            if (heroBtn) heroBtn.addEventListener("click", handleGetStartedClick);
+        });
     </script>
 </body>
 </html>
