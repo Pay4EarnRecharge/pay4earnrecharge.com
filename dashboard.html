@@ -175,12 +175,12 @@
 
         <!-- 2. BANK DETAILS VIEW -->
         <div id="bankView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Bank Details for Wallet Add Money</h2>
-            <p style="margin-bottom: 8px;"><strong>Business Name:</strong> Digital Shop CSP Traders</p>
-            <p style="margin-bottom: 8px;"><strong>Proprietor:</strong> Deepen Kumar Yadav</p>
-            <p style="margin-bottom: 8px;"><strong>Bank Name:</strong> State Bank of India (SBI)</p>
-            <p style="margin-bottom: 8px;"><strong>UPI ID:</strong> 7033814401@upi</p>
-            <p style="color: #64748b; font-size: 13px; margin-top: 15px;">Note: Send payment screenshot to admin for instant balance credit.</p>
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Bank Details for Add Money</h2>
+            <p style="margin-bottom: 8px;"><strong>Account Holder Name:</strong> DEEPEN KUMAR YADAV</p>
+            <p style="margin-bottom: 8px;"><strong>Bank Name:</strong> BANDHAN BANK</p>
+            <p style="margin-bottom: 8px;"><strong>IFSC Code:</strong> BDBL0001394</p>
+            <p style="margin-bottom: 8px;"><strong>UPI ID:</strong> deepen5050@ybl</p>
+            <p style="color: #64748b; font-size: 13px; margin-top: 15px;">Note: Payment karne ke baad screenshot support pe bhejein balance add karne ke liye.</p>
         </div>
 
         <!-- 3. REFER & EARN VIEW -->
@@ -193,14 +193,14 @@
             </div>
         </div>
 
-        <!-- 4. PROFILE VIEW -->
+        <!-- 4. RETAILER PROFILE VIEW -->
         <div id="profileView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
-            <p style="margin-bottom: 8px;"><strong>Business Name:</strong> Digital Shop CSP Traders</p>
-            <p style="margin-bottom: 8px;"><strong>Proprietor:</strong> Deepen Kumar Yadav</p>
-            <p style="margin-bottom: 8px;"><strong>Registered Email:</strong> <span id="userEmailText">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Help Line Contact:</strong> +91 70338 14401</p>
-            <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Retailer / Merchant Account</p>
+            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Retailer User</span></p>
+            <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
+            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">+91 70338 14401</span></p>
+            <p style="margin-bottom: 8px;"><strong>Business Entity:</strong> Digital Shop CSP Traders</p>
+            <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Active Merchant / Retailer</p>
         </div>
 
         <!-- 5. REPORTS VIEW -->
@@ -242,7 +242,7 @@
             const dateStr = new Date().toLocaleDateString('en-GB');
             const reqId = Math.floor(100000000 + Math.random() * 900000000);
             const opTxn = Math.floor(1000000000 + Math.random() * 9000000000);
-            const cost = (amount * 0.985).toFixed(2); // Estimated cost
+            const cost = (amount * 0.985).toFixed(2); 
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -309,7 +309,12 @@
                 window.location.href = "login.html";
             } else {
                 const userEmailElem = document.getElementById("userEmailText");
+                const userDisplayNameElem = document.getElementById("userDisplayName");
+                const userMobileElem = document.getElementById("userMobileText");
+
                 if(userEmailElem) userEmailElem.innerText = user.email;
+                if(userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
+                if(userMobileElem && user.phoneNumber) userMobileElem.innerText = user.phoneNumber;
             }
         });
 
