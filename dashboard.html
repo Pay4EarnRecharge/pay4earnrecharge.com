@@ -1,65 +1,110 @@
-<!-- Firebase Profile Fetch Script (Fixed Collection Case & Fields) -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Pay4Earn Recharge</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f1f5f9; color: #333; }
+        header { background: #0b192c; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: bold; font-size: 20px; }
+        .nav-menu { display: flex; gap: 15px; }
+        .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; cursor: pointer; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        .view-section { display: none; }
+        .active-view { display: block !important; }
+        .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; width: 100%; max-width: 320px; margin-bottom: 20px; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+        .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
-        authDomain: "pay4earn-recharge.firebaseapp.com",
-        databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
-        projectId: "pay4earn-recharge",
-        storageBucket: "pay4earn-recharge.firebasestorage.app",
-        messagingSenderId: "57674434302",
-        appId: "1:57674434302:web:184a566300e1099de9c7af",
-        measurementId: "G-8Q5NP1PKC4"
-    };
+    <header>
+        <div class="logo">Pay4Earn Recharge</div>
+        <div class="nav-menu">
+            <a onclick="showSection('servicesView')">Services</a>
+            <a onclick="showSection('profileView')">Profile</a>
+            <a id="logoutBtn" style="color: #f87171;">Logout</a>
+        </div>
+    </header>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    <div class="container">
+        <!-- Main Services Section -->
+        <div id="servicesView" class="view-section active-view">
+            <div class="balance-card">
+                Balance: ₹ <span id="walletBalance">0.00</span>
+            </div>
+            <h2 style="margin-bottom: 15px;">Welcome! Select Service</h2>
+            <div class="services-grid">
+                <div class="service-btn">📱 MOBILE</div>
+                <div class="service-btn">📺 DTH</div>
+            </div>
+        </div>
 
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            window.location.href = "login.html";
-        } else {
-            const userDisplayNameElem = document.getElementById("userDisplayName");
-            const userEmailElem = document.getElementById("userEmailText");
-            const userMobileElem = document.getElementById("userMobileText");
-            const walletBalanceElem = document.getElementById("walletBalance");
+        <!-- Profile Section -->
+        <div id="profileView" class="view-section content-card">
+            <h2>Retailer Profile</h2>
+            <p><strong>Name:</strong> <span id="userDisplayName">Loading...</span></p>
+            <p><strong>Email:</strong> <span id="userEmailText">Loading...</span></p>
+            <p><strong>Mobile:</strong> <span id="userMobileText">Loading...</span></p>
+        </div>
+    </div>
 
-            try {
-                // IMPORTANT: Capital "Users" (matching your Android App & Firebase structure)
-                const userDocRef = doc(db, "Users", user.uid);
-                const docSnap = await getDoc(userDocRef);
-
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-
-                    // Firestore se exact values set karein
-                    if (userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || "Not Provided";
-                    if (userEmailElem) userEmailElem.innerText = userData.email || user.email;
-                    if (userMobileElem) userMobileElem.innerText = userData.mobile || "Not Provided";
-                    
-                    // Wallet Balance sync
-                    if (walletBalanceElem && userData.walletBalance !== undefined) {
-                        walletBalanceElem.innerText = parseFloat(userData.walletBalance).toFixed(2);
-                    }
-                } else {
-                    if (userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
-                    if (userEmailElem) userEmailElem.innerText = user.email;
-                    if (userMobileElem) userMobileElem.innerText = "Not Provided";
-                }
-            } catch (error) {
-                console.error("Error fetching profile from Users collection:", error);
-            }
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
+            document.getElementById(sectionId).classList.add('active-view');
         }
-    });
+    </script>
 
-    document.getElementById("logoutBtn").addEventListener("click", (e) => {
-        e.preventDefault();
-        signOut(auth).then(() => {
-            window.location.href = "login.html";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
+            authDomain: "pay4earn-recharge.firebaseapp.com",
+            databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
+            projectId: "pay4earn-recharge",
+            storageBucket: "pay4earn-recharge.firebasestorage.app",
+            messagingSenderId: "57674434302",
+            appId: "1:57674434302:web:184a566300e1099de9c7af",
+            measurementId: "G-8Q5NP1PKC4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            } else {
+                document.getElementById("userEmailText").innerText = user.email;
+                try {
+                    const userDocRef = doc(db, "Users", user.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById("userDisplayName").innerText = data.fullName || "N/A";
+                        document.getElementById("userMobileText").innerText = data.mobile || "N/A";
+                        if(data.walletBalance !== undefined) {
+                            document.getElementById("walletBalance").innerText = parseFloat(data.walletBalance).toFixed(2);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Profile load error:", e);
+                }
+            }
         });
-    });
-</script>
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            signOut(auth).then(() => window.location.href = "login.html");
+        });
+    </script>
+</body>
+</html>
