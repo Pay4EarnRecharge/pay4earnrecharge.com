@@ -7,56 +7,111 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #f1f5f9; color: #333; }
-        header { background: #0b192c; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: bold; font-size: 20px; }
-        .nav-menu { display: flex; gap: 15px; }
-        .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; cursor: pointer; }
-        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+
+        /* Header Navigation */
+        header { background: #0b192c; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-box { display: flex; flex-direction: column; }
+        .logo { font-weight: bold; font-size: 20px; color: #38bdf8; }
+        .sub-logo-btn { background: #1e293b; color: #94a3b8; font-size: 11px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-top: 2px; text-decoration: none; border: 1px solid #334155; width: fit-content; cursor: pointer; }
         
+        .nav-menu { display: flex; gap: 15px; align-items: center; }
+        .nav-menu a { color: #fff; text-decoration: none; font-size: 14px; cursor: pointer; font-weight: 500; }
+        .nav-menu a:hover { color: #38bdf8; }
+
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
         .view-section { display: none; }
         .active-view { display: block !important; }
-        
-        .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-        .balance-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: bold; width: 100%; max-width: 320px; margin-bottom: 20px; }
-        
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 20px; }
+
+        /* News Helpline Support Bar */
+        .news-bar { background: #e0f2fe; border: 1px solid #bae6fd; padding: 10px 15px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; }
+        .news-title { background: #0284c7; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 12px; white-space: nowrap; }
+        .news-text { font-size: 14px; color: #0369a1; font-weight: 500; }
+
+        /* Balance & Add Money Bar */
+        .top-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .balance-box { font-size: 18px; font-weight: bold; }
+        .add-money-btn { background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .add-money-btn:hover { background: #15803d; }
+
+        /* Service Grid Buttons */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
         .service-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
 
+        /* Cards & Forms */
+        .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: bold; }
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; }
         .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        
+        /* Sub Navigation Tabs */
+        .sub-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .sub-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .sub-btn.active-sub { background: #0b192c; color: #fff; border-color: #0b192c; }
+
+        /* Transactions Table */
+        .tx-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; margin-top: 10px; }
+        .tx-table th, .tx-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        .tx-table th { background: #f8fafc; color: #475569; }
     </style>
 </head>
 <body>
 
+    <!-- Header Navigation Bar -->
     <header>
-        <div class="logo">Pay4Earn Recharge</div>
+        <div class="logo-box">
+            <div class="logo">Pay4Earn Recharge</div>
+            <a onclick="showSection('servicesView')" class="sub-logo-btn">1 Home Services</a>
+        </div>
         <div class="nav-menu">
             <a onclick="showSection('servicesView')">Services</a>
-            <a onclick="showSection('profileView')">Profile</a>
-            <a id="logoutBtn" style="color: #f87171;">Logout</a>
+            <a onclick="showSection('referView')">2 Refer & Earn</a>
+            <a onclick="showSection('profileView')">3 Profile</a>
+            <a onclick="showSection('reportsView')">4 Reports</a>
+            <a onclick="showSection('bankView')" style="color: #4ade80;">5 Add Money</a>
+            <a id="logoutBtn" style="color: #f87171;">7 Logout</a>
         </div>
     </header>
 
     <div class="container">
-        <!-- 1. SERVICES VIEW -->
+
+        <!-- News Helpline Support Bar -->
+        <div class="news-bar">
+            <span class="news-title">News</span>
+            <marquee class="news-text" scrollamount="5">
+                📢 Help line Support — Mobile - 9798168045 | Whatsapp - 7033814401 | Email - deependigital@gmail.com
+            </marquee>
+        </div>
+
+        <!-- 1. HOME SERVICES VIEW -->
         <div id="servicesView" class="view-section active-view">
-            <div class="balance-card">
-                Balance: ₹ <span id="walletBalance">0.00</span>
+            
+            <div class="top-card">
+                <div class="balance-box">
+                    6 Balance: ₹ <span id="walletBalance">0.00</span>
+                </div>
+                <button class="add-money-btn" onclick="showSection('bankView')">+ Add Money</button>
             </div>
-            
-            <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome! Select Service</h2>
-            
-            <!-- Service Selection Buttons -->
+
+            <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome ! Select Service</h2>
+
+            <!-- Service Grid Buttons -->
             <div class="services-grid">
                 <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
                 <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
+                <div class="service-btn" onclick="alert('Broadband service coming soon!')">🌐 Broadband</div>
+                <div class="service-btn" onclick="alert('Postpaid service coming soon!')">📄 POSTPAID</div>
+                <div class="service-btn" onclick="alert('Landline service coming soon!')">☎️ Landline</div>
+                <div class="service-btn" onclick="alert('Electricity bill service coming soon!')">💡 ELECTRICITY</div>
+                <div class="service-btn" onclick="alert('Water Bill service coming soon!')">💧 Water Bill</div>
+                <div class="service-btn" onclick="alert('Gas service coming soon!')">🔥 GAS</div>
+                <div class="service-btn" onclick="alert('Insurance service coming soon!')">🛡️ INSURANCE</div>
             </div>
 
-            <!-- Mobile Recharge Form -->
-            <div id="mobileForm" class="content-card" style="display: none; margin-top: 20px;">
+            <!-- Mobile Form -->
+            <div id="mobileForm" class="content-card" style="display: none;">
                 <h3 style="margin-bottom: 15px; color: #0b192c;">Mobile Recharge</h3>
                 <form id="mobileRechargeForm">
                     <div class="form-group">
@@ -81,8 +136,8 @@
                 </form>
             </div>
 
-            <!-- DTH Recharge Form -->
-            <div id="dthForm" class="content-card" style="display: none; margin-top: 20px;">
+            <!-- DTH Form -->
+            <div id="dthForm" class="content-card" style="display: none;">
                 <h3 style="margin-bottom: 15px; color: #0b192c;">DTH Recharge</h3>
                 <form id="dthRechargeForm">
                     <div class="form-group">
@@ -107,43 +162,138 @@
                     <button type="submit" class="pay-now-btn">PAY NOW</button>
                 </form>
             </div>
+
+            <!-- LAST 5 TRANSACTIONS HISTORY TABLE -->
+            <div class="tx-section">
+                <h3 style="color: #0b192c;">Last 5 Transactions History</h3>
+                <div style="overflow-x: auto;">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>S#</th>
+                                <th>Date</th>
+                                <th>Req ID</th>
+                                <th>Provider</th>
+                                <th>Number</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="last5TxBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!-- 2. PROFILE VIEW -->
-        <div id="profileView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Retailer Profile</h2>
-            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Business Entity:</strong> Digital Shop CSP Traders</p>
-            <p style="margin-bottom: 8px;"><strong>Account Type:</strong> Active Merchant / Retailer</p>
+        <!-- 2. REFER & EARN VIEW -->
+        <div id="referView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Refer & Earn</h2>
+            <p style="margin-bottom: 12px; color: #475569;">Share your link with retailers to earn instant commission on recharges.</p>
+            <div class="form-group">
+                <label>Referral Link</label>
+                <input type="text" readonly value="https://pay4earnrecharge.github.io/pay4earnrecharge.com/login.html">
+            </div>
         </div>
+
+        <!-- 3. PROFILE VIEW -->
+        <div id="profileView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Profile Settings</h2>
+            
+            <div class="sub-nav">
+                <button class="sub-btn active-sub" onclick="toggleProfileTab('infoTab', this)">A- Account Details</button>
+                <button class="sub-btn" onclick="toggleProfileTab('passTab', this)">B- Change/Forgot Password</button>
+            </div>
+
+            <div id="infoTab">
+                <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
+                <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
+                <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
+            </div>
+
+            <div id="passTab" style="display: none;">
+                <p style="margin-bottom: 10px; font-size: 14px; color: #475569;">Password Reset Link aapke registered email address par send ho jayega.</p>
+                <button id="resetPassBtn" class="add-money-btn" style="background: #2563eb;">Send Password Reset Email</button>
+            </div>
+        </div>
+
+        <!-- 4. REPORTS VIEW -->
+        <div id="reportsView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Reports & Summary</h2>
+            
+            <div class="sub-nav">
+                <button class="sub-btn active-sub" onclick="toggleReportTab('repRecharge', this)">A- Recharge</button>
+                <button class="sub-btn" onclick="toggleReportTab('repHistory', this)">B- History</button>
+                <button class="sub-btn" onclick="toggleReportTab('repCommission', this)">C- Commission</button>
+                <button class="sub-btn" onclick="toggleReportTab('repLedger', this)">D- Ledger</button>
+            </div>
+
+            <div id="repRecharge" class="report-tab-content">
+                <p style="color: #64748b;">Live recharge logs summary.</p>
+            </div>
+            <div id="repHistory" class="report-tab-content" style="display: none;">
+                <p style="color: #64748b;">Complete transaction records.</p>
+            </div>
+            <div id="repCommission" class="report-tab-content" style="display: none;">
+                <p style="color: #64748b;">Commission earnings breakdown.</p>
+            </div>
+            <div id="repLedger" class="report-tab-content" style="display: none;">
+                <p style="color: #64748b;">Full account debit/credit statement ledger.</p>
+            </div>
+        </div>
+
+        <!-- 5. BANK DETAILS (ADD MONEY) -->
+        <div id="bankView" class="view-section content-card">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Bank Details for Add Money</h2>
+            <p style="margin-bottom: 8px;"><strong>Account Holder:</strong> DEEPEN KUMAR YADAV</p>
+            <p style="margin-bottom: 8px;"><strong>Bank Name:</strong> BANDHAN BANK</p>
+            <p style="margin-bottom: 8px;"><strong>IFSC Code:</strong> BDBL0001394</p>
+            <p style="margin-bottom: 8px;"><strong>UPI ID:</strong> deepen5050@ybl</p>
+            <p style="color: #0369a1; font-size: 13px; margin-top: 15px;">Note: Payment ke baad screenshot WhatsApp (7033814401) par bhejein balance update ke liye.</p>
+        </div>
+
     </div>
 
-    <!-- UI View Switcher Script -->
+    <!-- UI View Switcher Scripts -->
     <script>
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
         }
 
-        // Button click par Form open karne ka logic
         function openService(type) {
             document.getElementById('mobileForm').style.display = 'none';
             document.getElementById('dthForm').style.display = 'none';
 
-            if (type === 'mobile') {
-                document.getElementById('mobileForm').style.display = 'block';
-            } else if (type === 'dth') {
-                document.getElementById('dthForm').style.display = 'block';
-            }
+            if (type === 'mobile') document.getElementById('mobileForm').style.display = 'block';
+            if (type === 'dth') document.getElementById('dthForm').style.display = 'block';
+        }
+
+        function toggleProfileTab(tabId, btn) {
+            document.getElementById('infoTab').style.display = 'none';
+            document.getElementById('passTab').style.display = 'none';
+            document.querySelectorAll('#profileView .sub-btn').forEach(b => b.classList.remove('active-sub'));
+            
+            document.getElementById(tabId).style.display = 'block';
+            btn.classList.add('active-sub');
+        }
+
+        function toggleReportTab(tabId, btn) {
+            document.querySelectorAll('.report-tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('#reportsView .sub-btn').forEach(b => b.classList.remove('active-sub'));
+            
+            document.getElementById(tabId).style.display = 'block';
+            btn.classList.add('active-sub');
         }
     </script>
 
-    <!-- Firebase Realtime Auth & Profile Script -->
+    <!-- Firebase Auth & Firestore Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -190,6 +340,13 @@
                 } catch (error) {
                     console.error("Profile load error:", error);
                 }
+
+                // Password Reset Email Trigger
+                document.getElementById("resetPassBtn").addEventListener("click", () => {
+                    sendPasswordResetEmail(auth, user.email)
+                        .then(() => alert("Password reset link sent to " + user.email))
+                        .catch((err) => alert("Error: " + err.message));
+                });
             }
         });
 
