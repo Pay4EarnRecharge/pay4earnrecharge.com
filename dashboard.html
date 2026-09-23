@@ -8,10 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #f1f5f9; color: #333; }
 
-        /* Header Navigation Bar */
         header { background: #0b192c; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Logo Icon + Brand Text Container */
         .brand-container { display: flex; align-items: center; gap: 10px; }
         .brand-container img { height: 35px; width: auto; object-fit: contain; }
         .logo-text { font-weight: bold; font-size: 20px; color: #38bdf8; white-space: nowrap; }
@@ -24,35 +21,33 @@
         .view-section { display: none; }
         .active-view { display: block !important; }
 
-        /* News Helpline Support Bar */
         .news-bar { background: #e0f2fe; border: 1px solid #bae6fd; padding: 10px 15px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; }
         .news-title { background: #0284c7; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 12px; white-space: nowrap; }
         .news-text { font-size: 14px; color: #0369a1; font-weight: 500; }
 
-        /* Balance & Add Money Bar */
         .top-card { background: #1e3e62; color: #fff; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .balance-box { font-size: 18px; font-weight: bold; }
         .add-money-btn { background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .add-money-btn:hover { background: #15803d; }
 
-        /* Service Grid Buttons */
         .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .service-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
         .service-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
 
-        /* Cards & Forms */
         .content-card { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: bold; }
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; }
+        
+        .browse-plan-btn { width: 100%; background: #0284c7; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
         .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
 
-        /* Sub Navigation Tabs */
-        .sub-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .sub-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .sub-btn.active-sub { background: #0b192c; color: #fff; border-color: #0b192c; }
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-card { background: #fff; border-radius: 8px; width: 90%; max-width: 500px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .plan-item { border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .plan-item:hover { background: #f0f9ff; border-color: #0284c7; }
 
-        /* Transactions Table */
         .tx-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; margin-top: 10px; }
         .tx-table th, .tx-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
@@ -61,15 +56,12 @@
 </head>
 <body>
 
-    <!-- Header Navigation Bar -->
     <header>
-        <!-- Left Side: LOGO.PNG + Pay4Earn Recharge Text -->
         <div class="brand-container">
             <img src="logo.png" alt="Logo">
             <span class="logo-text">Pay4Earn Recharge</span>
         </div>
         
-        <!-- Right Side Nav Menu -->
         <div class="nav-menu">
             <a onclick="showSection('servicesView')">1 Home Services</a>
             <a onclick="showSection('referView')">2 Refer & Earn</a>
@@ -82,7 +74,6 @@
 
     <div class="container">
 
-        <!-- News Helpline Support Bar -->
         <div class="news-bar">
             <span class="news-title">News</span>
             <marquee class="news-text" scrollamount="5">
@@ -90,7 +81,6 @@
             </marquee>
         </div>
 
-        <!-- 1. HOME SERVICES VIEW -->
         <div id="servicesView" class="view-section active-view">
             
             <div class="top-card">
@@ -102,7 +92,6 @@
 
             <h2 style="margin-bottom: 15px; font-size: 18px; color: #0b192c;">Welcome ! Select Service</h2>
 
-            <!-- Service Grid Buttons -->
             <div class="services-grid">
                 <div class="service-btn" onclick="openService('mobile')">📱 MOBILE</div>
                 <div class="service-btn" onclick="openService('dth')">📺 DTH</div>
@@ -133,6 +122,9 @@
                             <option value="BSNL">BSNL</option>
                         </select>
                     </div>
+                    
+                    <button type="button" class="browse-plan-btn" onclick="openMobilePlansModal()">📋 BROWSE MOBILE PLANS</button>
+
                     <div class="form-group">
                         <label>Recharge Amount</label>
                         <input type="number" id="mobileAmount" placeholder="Enter Amount (₹)" required>
@@ -160,6 +152,9 @@
                             <option value="d2h">d2h</option>
                         </select>
                     </div>
+
+                    <button type="button" class="browse-plan-btn" style="background: #8b5cf6;" onclick="openDthPlansModal()">📺 BROWSE DTH PACKS</button>
+
                     <div class="form-group">
                         <label>Recharge Amount</label>
                         <input type="number" id="dthAmount" placeholder="Enter Amount (₹)" required>
@@ -168,7 +163,7 @@
                 </form>
             </div>
 
-            <!-- LAST 5 TRANSACTIONS HISTORY TABLE -->
+            <!-- LAST 5 TRANSACTIONS TABLE -->
             <div class="tx-section">
                 <h3 style="color: #0b192c;">Last 5 Transactions History</h3>
                 <div style="overflow-x: auto;">
@@ -194,67 +189,28 @@
             </div>
         </div>
 
-        <!-- 2. REFER & EARN VIEW -->
         <div id="referView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Refer & Earn</h2>
-            <p style="margin-bottom: 12px; color: #475569;">Share your link with retailers to earn instant commission on recharges.</p>
             <div class="form-group">
                 <label>Referral Link</label>
                 <input type="text" readonly value="https://pay4earnrecharge.github.io/pay4earnrecharge.com/login.html">
             </div>
         </div>
 
-        <!-- 3. PROFILE VIEW -->
         <div id="profileView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Profile Settings</h2>
-            
-            <div class="sub-nav">
-                <button class="sub-btn active-sub" onclick="toggleProfileTab('infoTab', this)">A- Account Details</button>
-                <button class="sub-btn" onclick="toggleProfileTab('passTab', this)">B- Change/Forgot Password</button>
-            </div>
-
-            <div id="infoTab">
-                <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
-                <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
-                <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
-            </div>
-
-            <div id="passTab" style="display: none;">
-                <p style="margin-bottom: 10px; font-size: 14px; color: #475569;">Password Reset Link aapke registered email address par send ho jayega.</p>
-                <button id="resetPassBtn" class="add-money-btn" style="background: #2563eb;">Send Password Reset Email</button>
-            </div>
+            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
+            <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
+            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
         </div>
 
-        <!-- 4. REPORTS VIEW -->
         <div id="reportsView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Reports & Summary</h2>
-            
-            <div class="sub-nav">
-                <button class="sub-btn active-sub" onclick="toggleReportTab('repRecharge', this)">A- Recharge</button>
-                <button class="sub-btn" onclick="toggleReportTab('repHistory', this)">B- History</button>
-                <button class="sub-btn" onclick="toggleReportTab('repCommission', this)">C- Commission</button>
-                <button class="sub-btn" onclick="toggleReportTab('repLedger', this)">D- Ledger</button>
-            </div>
-
-            <div id="repRecharge" class="report-tab-content">
-                <p style="color: #64748b;">Live recharge logs summary.</p>
-            </div>
-            <div id="repHistory" class="report-tab-content" style="display: none;">
-                <p style="color: #64748b;">Complete transaction records.</p>
-            </div>
-            <div id="repCommission" class="report-tab-content" style="display: none;">
-                <p style="color: #64748b;">Commission earnings breakdown.</p>
-            </div>
-            <div id="repLedger" class="report-tab-content" style="display: none;">
-                <p style="color: #64748b;">Full account debit/credit statement ledger.</p>
-            </div>
+            <p style="color: #64748b;">Transaction history and reports summary.</p>
         </div>
 
-        <!-- 5. BANK DETAILS & ADD MONEY PAYMENT -->
         <div id="bankView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Add Money to Wallet (PayU Online)</h2>
-            
-            <!-- PayU Online Add Money Form -->
             <div style="background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 20px;">
                 <div class="form-group">
                     <label>Enter Amount to Add (₹)</label>
@@ -262,18 +218,22 @@
                 </div>
                 <button id="btnOnlineAddMoney" class="add-money-btn" style="width: 100%; background: #16a34a;">PROCEED TO ADD MONEY (PAYU)</button>
             </div>
-
-            <h3 style="color: #0b192c; margin-bottom: 10px; font-size: 16px;">Manual Bank Details</h3>
-            <p style="margin-bottom: 8px;"><strong>Account Holder:</strong> DEEPEN KUMAR YADAV</p>
-            <p style="margin-bottom: 8px;"><strong>Bank Name:</strong> BANDHAN BANK</p>
-            <p style="margin-bottom: 8px;"><strong>IFSC Code:</strong> BDBL0001394</p>
-            <p style="margin-bottom: 8px;"><strong>UPI ID:</strong> deepen5050@ybl</p>
-            <p style="color: #0369a1; font-size: 13px; margin-top: 15px;">Note: Payment ke baad screenshot WhatsApp (7033814401) par bhejein balance update ke liye.</p>
         </div>
 
     </div>
 
-    <!-- UI View Switcher Scripts -->
+    <!-- Plans Popup Modals -->
+    <div id="plansModal" class="modal-overlay">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 id="modalTitle" style="color: #0b192c;">Available Plans</h3>
+                <button onclick="closePlansModal()" style="background: transparent; border: none; font-size: 20px; cursor: pointer;">✕</button>
+            </div>
+            <div id="plansListContainer"></div>
+        </div>
+    </div>
+
+    <!-- UI Scripts -->
     <script>
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
@@ -288,39 +248,98 @@
             if (type === 'dth') document.getElementById('dthForm').style.display = 'block';
         }
 
-        function toggleProfileTab(tabId, btn) {
-            document.getElementById('infoTab').style.display = 'none';
-            document.getElementById('passTab').style.display = 'none';
-            document.querySelectorAll('#profileView .sub-btn').forEach(b => b.classList.remove('active-sub'));
+        // BROWSE MOBILE PLANS POPUP
+        function openMobilePlansModal() {
+            const operator = document.getElementById("mobileOperator").value;
+            if(!operator) return alert("Please select a Mobile Operator first!");
+
+            document.getElementById("modalTitle").innerText = operator + " - Popular Plans";
+            const container = document.getElementById("plansListContainer");
             
-            document.getElementById(tabId).style.display = 'block';
-            btn.classList.add('active-sub');
+            const mobilePlans = [
+                { amount: "199", desc: "1.5GB/day, Unlimited Calls, 28 Days" },
+                { amount: "239", desc: "1.5GB/day, 5G Unlimited, 28 Days" },
+                { amount: "299", desc: "2GB/day, Unlimited Calls, 28 Days" },
+                { amount: "666", desc: "1.5GB/day, Unlimited Calls, 84 Days" },
+                { amount: "2999", desc: "2.5GB/day, 365 Days Validity" }
+            ];
+
+            let html = "";
+            mobilePlans.forEach(plan => {
+                html += `
+                    <div class="plan-item" onclick="selectPlanAmount('${plan.amount}')">
+                        <div>
+                            <strong style="color: #0284c7; font-size: 16px;">₹${plan.amount}</strong>
+                            <p style="font-size: 13px; color: #475569;">${plan.desc}</p>
+                        </div>
+                        <button style="background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">SELECT</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById("plansModal").style.display = "flex";
         }
 
-        function toggleReportTab(tabId, btn) {
-            document.querySelectorAll('.report-tab-content').forEach(c => c.style.display = 'none');
-            document.querySelectorAll('#reportsView .sub-btn').forEach(b => b.classList.remove('active-sub'));
+        // BROWSE DTH PLANS POPUP
+        function openDthPlansModal() {
+            const operator = document.getElementById("dthOperator").value;
+            if(!operator) return alert("Please select a DTH Operator first!");
+
+            document.getElementById("modalTitle").innerText = operator + " - DTH Packs";
+            const container = document.getElementById("plansListContainer");
             
-            document.getElementById(tabId).style.display = 'block';
-            btn.classList.add('active-sub');
+            const dthPlans = [
+                { amount: "199", desc: "Basic Monthly Saver Pack (1 Month)" },
+                { amount: "299", desc: "Sports & Movies HD Special Pack (1 Month)" },
+                { amount: "499", desc: "Ultra HD Family Premium Pack (1 Month)" },
+                { amount: "1199", desc: "Annual Value Pack (12 Months)" },
+                { amount: "2399", desc: "All Channels Unlimited Annual Pack (12 Months)" }
+            ];
+
+            let html = "";
+            dthPlans.forEach(plan => {
+                html += `
+                    <div class="plan-item" onclick="selectDthPlanAmount('${plan.amount}')">
+                        <div>
+                            <strong style="color: #8b5cf6; font-size: 16px;">₹${plan.amount}</strong>
+                            <p style="font-size: 13px; color: #475569;">${plan.desc}</p>
+                        </div>
+                        <button style="background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">SELECT</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById("plansModal").style.display = "flex";
+        }
+
+        function selectPlanAmount(amt) {
+            document.getElementById("mobileAmount").value = amt;
+            closePlansModal();
+        }
+
+        function selectDthPlanAmount(amt) {
+            document.getElementById("dthAmount").value = amt;
+            closePlansModal();
+        }
+
+        function closePlansModal() {
+            document.getElementById("plansModal").style.display = "none";
         }
     </script>
 
-    <!-- Firebase Auth & Firestore Sync -->
+    <!-- Firebase Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
             authDomain: "pay4earn-recharge.firebaseapp.com",
-            databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
             projectId: "pay4earn-recharge",
             storageBucket: "pay4earn-recharge.firebasestorage.app",
             messagingSenderId: "57674434302",
-            appId: "1:57674434302:web:184a566300e1099de9c7af",
-            measurementId: "G-8Q5NP1PKC4"
+            appId: "1:57674434302:web:184a566300e1099de9c7af"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -334,12 +353,7 @@
                 window.location.href = "login.html";
             } else {
                 currentUser = user;
-                const userDisplayNameElem = document.getElementById("userDisplayName");
-                const userEmailElem = document.getElementById("userEmailText");
-                const userMobileElem = document.getElementById("userMobileText");
                 const walletBalanceElem = document.getElementById("walletBalance");
-
-                if (userEmailElem) userEmailElem.innerText = user.email;
 
                 try {
                     const userDocRef = doc(db, "users", user.uid);
@@ -347,34 +361,22 @@
 
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        if (userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || user.email.split('@')[0];
-                        if (userMobileElem) userMobileElem.innerText = userData.mobile || "Not Provided";
                         if (walletBalanceElem && userData.walletBalance !== undefined) {
                             walletBalanceElem.innerText = parseFloat(userData.walletBalance).toFixed(2);
                         }
                     } else {
-                        // Auto-create document with 0 balance if missing
                         await setDoc(userDocRef, { walletBalance: 0.0, email: user.email, userId: user.uid }, { merge: true });
                         if (walletBalanceElem) walletBalanceElem.innerText = "0.00";
                     }
 
-                    // Load Recent Transactions
                     loadRecentTransactions(user.uid);
-
                 } catch (error) {
                     console.error("Profile load error:", error);
                 }
-
-                // Password Reset Email Trigger
-                document.getElementById("resetPassBtn").addEventListener("click", () => {
-                    sendPasswordResetEmail(auth, user.email)
-                        .then(() => alert("Password reset link sent to " + user.email))
-                        .catch((err) => alert("Error: " + err.message));
-                });
             }
         });
 
-        // 🛑 WALLET BALANCE GUARD & MOBILE RECHARGE PROCESSOR
+        // RECHARGE SUBMIT HANDLER WITH WALLET GUARD
         document.getElementById("mobileRechargeForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const number = document.getElementById("mobileNumber").value.trim();
@@ -388,7 +390,6 @@
             await processRechargeTransaction(number, operator, amount, "MOBILE");
         });
 
-        // 🛑 WALLET BALANCE GUARD & DTH RECHARGE PROCESSOR
         document.getElementById("dthRechargeForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const number = document.getElementById("dthNumber").value.trim();
@@ -402,22 +403,19 @@
             await processRechargeTransaction(number, operator, amount, "DTH");
         });
 
-        // Core Atomic Transaction Processor Function
         async function processRechargeTransaction(number, operator, amount, type) {
-            if (!currentUser) return alert("User session expired. Please relogin.");
+            if (!currentUser) return alert("User session expired.");
 
             const userRef = doc(db, "users", currentUser.uid);
 
             try {
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(userRef);
-                    if (!userDoc.exists()) {
-                        throw new Error("User record not found in database!");
-                    }
+                    if (!userDoc.exists()) throw new Error("User record not found!");
 
                     const currentBalance = userDoc.data().walletBalance || 0.0;
 
-                    // 🛑 Insufficient Balance Blocker
+                    // STRICT WALLET BALANCE GUARD
                     if (currentBalance < amount) {
                         throw new Error("INSUFFICIENT_BALANCE");
                     }
@@ -425,10 +423,8 @@
                     const txnId = type + Date.now();
                     const newBalance = currentBalance - amount;
 
-                    // Update Wallet Balance
                     transaction.update(userRef, { walletBalance: newBalance });
 
-                    // Save Entry in User History
                     const userTxRef = doc(db, "users", currentUser.uid, "recharges", txnId);
                     const globalTxRef = doc(db, "recharges", txnId);
 
@@ -449,8 +445,6 @@
                 });
 
                 alert("🎉 Recharge Request Submitted Successfully!");
-                document.getElementById("mobileForm").reset();
-                document.getElementById("dthForm").reset();
                 location.reload();
 
             } catch (error) {
@@ -462,7 +456,6 @@
             }
         }
 
-        // Fetch Last 5 Transactions
         async function loadRecentTransactions(userId) {
             const txBody = document.getElementById("last5TxBody");
             try {
@@ -493,68 +486,10 @@
                 });
                 txBody.innerHTML = html;
             } catch (err) {
-                console.error("Error loading transactions:", err);
                 txBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Error loading history.</td></tr>`;
             }
         }
 
-        // Online PayU Add Money Trigger
-        document.getElementById("btnOnlineAddMoney").addEventListener("click", async () => {
-            const amountInput = document.getElementById("addMoneyInputAmount").value;
-            if (!amountInput || amountInput < 10) return alert("Please enter valid amount (Min ₹10)");
-            if (!currentUser) return alert("User not logged in!");
-
-            try {
-                const response = await fetch('https://us-central1-pay4earn-recharge.cloudfunctions.net/generatePayuHash', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        amount: amountInput,
-                        productinfo: "WalletTopup",
-                        firstname: currentUser.displayName || "User",
-                        email: currentUser.email,
-                        userId: currentUser.uid
-                    })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    // PayU Auto Form Redirect
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'https://secure.payu.in/_payment';
-
-                    const params = {
-                        key: data.key,
-                        txnid: data.txnid,
-                        amount: data.amount,
-                        productinfo: data.productinfo,
-                        firstname: data.firstname,
-                        email: data.email,
-                        phone: "9999999999",
-                        surl: data.surl,
-                        furl: data.furl,
-                        hash: data.hash
-                    };
-
-                    for (const key in params) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = params[key];
-                        form.appendChild(input);
-                    }
-                    document.body.appendChild(form);
-                    form.submit();
-                } else {
-                    alert("Failed to initiate PayU payment hash.");
-                }
-            } catch (e) {
-                alert("Error connecting to payment gateway: " + e.message);
-            }
-        });
-
-        // Logout
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
             signOut(auth).then(() => {
