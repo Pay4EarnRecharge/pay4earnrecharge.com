@@ -42,6 +42,11 @@
         .browse-plan-btn { width: 100%; background: #0284c7; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
         .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
 
+        /* Reports Section Grid */
+        .reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+        .report-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
+        .report-card:hover { background: #0284c7; color: #ffffff; border-color: #0284c7; }
+
         /* Modal Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-card { background: #fff; border-radius: 8px; width: 90%; max-width: 500px; padding: 20px; max-height: 80vh; overflow-y: auto; }
@@ -81,6 +86,7 @@
             </marquee>
         </div>
 
+        <!-- 1 Home Services View -->
         <div id="servicesView" class="view-section active-view">
             
             <div class="top-card">
@@ -195,6 +201,7 @@
             </div>
         </div>
 
+        <!-- 2 Refer View -->
         <div id="referView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Refer & Earn</h2>
             <div class="form-group">
@@ -203,18 +210,49 @@
             </div>
         </div>
 
+        <!-- 3 Profile Section (A- User Info, B- Change/Forgot Password) -->
         <div id="profileView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Profile Settings</h2>
-            <p style="margin-bottom: 8px;"><strong>Customer Login Name:</strong> <span id="userDisplayName">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Email Address:</strong> <span id="userEmailText">Loading...</span></p>
-            <p style="margin-bottom: 8px;"><strong>Mobile Number:</strong> <span id="userMobileText">Loading...</span></p>
+            <h2 style="color: #0b192c; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Profile Settings</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #0284c7; margin-bottom: 10px;">A- Personal Details</h4>
+                <p style="margin-bottom: 8px;"><strong>NAME:</strong> <span id="userDisplayName">Loading...</span></p>
+                <p style="margin-bottom: 8px;"><strong>MOBILE:</strong> <span id="userMobileText">Loading...</span></p>
+                <p style="margin-bottom: 8px;"><strong>EMAIL:</strong> <span id="userEmailText">Loading...</span></p>
+            </div>
+
+            <div style="border-top: 1px dashed #cbd5e1; padding-top: 15px;">
+                <h4 style="color: #0284c7; margin-bottom: 10px;">B- Security</h4>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">Click below to send password reset instructions to your registered email address.</p>
+                <button id="btnResetPassword" style="background: #e11d48; color: white; border: none; padding: 10px 16px; border-radius: 5px; font-weight: bold; cursor: pointer;">🔐 Change / Forgot Password</button>
+            </div>
         </div>
 
+        <!-- 4 Reports Section (A- Recharge, B- History, C- Commission, D- Ledger) -->
         <div id="reportsView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Reports & Summary</h2>
-            <p style="color: #64748b;">Transaction history and reports summary.</p>
+            <h2 style="color: #0b192c; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Reports & Summary</h2>
+            
+            <div class="reports-grid">
+                <div class="report-card" onclick="alert('A- Recharge Report coming soon!')">
+                    <div style="font-size: 24px; margin-bottom: 5px;">📲</div>
+                    <div>A- RECHARGE</div>
+                </div>
+                <div class="report-card" onclick="alert('B- History Report coming soon!')">
+                    <div style="font-size: 24px; margin-bottom: 5px;">📜</div>
+                    <div>B- HISTORY</div>
+                </div>
+                <div class="report-card" onclick="alert('C- Commission Report coming soon!')">
+                    <div style="font-size: 24px; margin-bottom: 5px;">💰</div>
+                    <div>C- COMMISSION</div>
+                </div>
+                <div class="report-card" onclick="alert('D- Ledger Report coming soon!')">
+                    <div style="font-size: 24px; margin-bottom: 5px;">📊</div>
+                    <div>D- LEDGER</div>
+                </div>
+            </div>
         </div>
 
+        <!-- 5 Add Money View -->
         <div id="bankView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Add Money to Wallet (PayU Online)</h2>
             <div style="background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 20px;">
@@ -354,10 +392,10 @@
         }
     </script>
 
-    <!-- Capital 'Users' Firestore Realtime Fetch Fix -->
+    <!-- Capital 'Users' Firestore Realtime Fetch & Auto-Logout Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, getDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -376,6 +414,13 @@
         let currentUser = null;
         let activeUnsubscribe = null;
 
+        // Auto-Logout when exiting dashboard page or closing window
+        window.addEventListener('beforeunload', () => {
+            if (auth.currentUser) {
+                signOut(auth);
+            }
+        });
+
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 if (activeUnsubscribe) activeUnsubscribe();
@@ -387,7 +432,6 @@
                 const userMobileElem = document.getElementById("userMobileText");
                 const walletBalanceElem = document.getElementById("walletBalance");
 
-                // Helper to update DOM UI
                 const updateUiData = (data) => {
                     if (userDisplayNameElem) {
                         userDisplayNameElem.innerText = data.fullName || data.name || data.displayName || user.displayName || (user.email ? user.email.split('@')[0] : "User");
@@ -404,19 +448,16 @@
                     }
                 };
 
-                // Check capital 'Users' first (as shown in your Cloud Firestore screenshot)
                 let primaryRef = doc(db, "Users", user.uid);
                 let secondaryRef = doc(db, "users", user.uid);
 
                 let primarySnap = await getDoc(primaryRef);
                 let targetRef = primarySnap.exists() ? primaryRef : secondaryRef;
 
-                // Attach Real-time listener for instant sync
                 activeUnsubscribe = onSnapshot(targetRef, (docSnap) => {
                     if (docSnap.exists()) {
                         updateUiData(docSnap.data());
                     } else {
-                        // If document missing in target, fallback to Auth state details
                         updateUiData({});
                     }
                 }, (error) => {
@@ -424,6 +465,21 @@
                 });
 
                 loadRecentTransactions(user.uid);
+            }
+        });
+
+        // Change / Forgot Password Trigger
+        document.getElementById("btnResetPassword").addEventListener("click", () => {
+            if (currentUser && currentUser.email) {
+                sendPasswordResetEmail(auth, currentUser.email)
+                    .then(() => {
+                        alert("📧 Password reset email sent to " + currentUser.email + ". Please check your inbox!");
+                    })
+                    .catch((err) => {
+                        alert("Error: " + err.message);
+                    });
+            } else {
+                alert("User email not found!");
             }
         });
 
@@ -457,7 +513,6 @@
         async function processRechargeTransaction(number, operator, amount, type) {
             if (!currentUser) return alert("User session expired.");
 
-            // Priority document reference for transaction
             let userRef = doc(db, "Users", currentUser.uid);
             let checkSnap = await getDoc(userRef);
             if (!checkSnap.exists()) {
@@ -514,7 +569,6 @@
         async function loadRecentTransactions(userId) {
             const txBody = document.getElementById("last5TxBody");
             try {
-                // Fetch recharges subcollection from 'Users' or 'users'
                 let txRef = collection(db, "Users", userId, "recharges");
                 let q = query(txRef, orderBy("timestamp", "desc"), limit(5));
                 let querySnapshot = await getDocs(q);
