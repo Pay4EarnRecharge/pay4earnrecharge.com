@@ -106,7 +106,10 @@
 
             <!-- Mobile Form -->
             <div id="mobileForm" class="content-card" style="display: none;">
-                <h3 style="margin-bottom: 15px; color: #0b192c;">Mobile Recharge</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="color: #0b192c;">Mobile Recharge</h3>
+                    <button type="button" onclick="closeAllServiceForms()" style="background: #e2e8f0; color: #0f172a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">⬅️ Back</button>
+                </div>
                 <form id="mobileRechargeForm">
                     <div class="form-group">
                         <label>Mobile Number</label>
@@ -135,7 +138,10 @@
 
             <!-- DTH Form -->
             <div id="dthForm" class="content-card" style="display: none;">
-                <h3 style="margin-bottom: 15px; color: #0b192c;">DTH Recharge</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="color: #0b192c;">DTH Recharge</h3>
+                    <button type="button" onclick="closeAllServiceForms()" style="background: #e2e8f0; color: #0f172a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">⬅️ Back</button>
+                </div>
                 <form id="dthRechargeForm">
                     <div class="form-group">
                         <label>Customer ID / VC Number</label>
@@ -233,19 +239,46 @@
         </div>
     </div>
 
-    <!-- UI Scripts -->
+    <!-- UI Scripts with Navigation & Form Switcher Fix -->
     <script>
+        // Navigation Views (Home, Profile, Reports, etc.) Switcher
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
+
+            // Reset/Hide open forms when switching views or clicking "1 Home Services"
+            if (sectionId === 'servicesView') {
+                closeAllServiceForms();
+            }
         }
 
+        // Service Buttons (Mobile, DTH, etc.) Form Toggler
         function openService(type) {
-            document.getElementById('mobileForm').style.display = 'none';
-            document.getElementById('dthForm').style.display = 'none';
+            closeAllServiceForms();
 
-            if (type === 'mobile') document.getElementById('mobileForm').style.display = 'block';
-            if (type === 'dth') document.getElementById('dthForm').style.display = 'block';
+            if (type === 'mobile') {
+                const mobileForm = document.getElementById('mobileForm');
+                if (mobileForm) {
+                    mobileForm.style.display = 'block';
+                    mobileForm.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            if (type === 'dth') {
+                const dthForm = document.getElementById('dthForm');
+                if (dthForm) {
+                    dthForm.style.display = 'block';
+                    dthForm.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        // Helper Function: Close & Clear Recharge Forms
+        function closeAllServiceForms() {
+            const mobileForm = document.getElementById('mobileForm');
+            const dthForm = document.getElementById('dthForm');
+            
+            if (mobileForm) mobileForm.style.display = 'none';
+            if (dthForm) dthForm.style.display = 'none';
         }
 
         // BROWSE MOBILE PLANS POPUP
@@ -353,25 +386,51 @@
                 window.location.href = "login.html";
             } else {
                 currentUser = user;
+                const userDisplayNameElem = document.getElementById("userDisplayName");
+                const userEmailElem = document.getElementById("userEmailText");
+                const userMobileElem = document.getElementById("userMobileText");
                 const walletBalanceElem = document.getElementById("walletBalance");
 
+                if (userEmailElem) userEmailElem.innerText = user.email;
+
                 try {
-                    const userDocRef = doc(db, "users", user.uid);
-                    const docSnap = await getDoc(userDocRef);
+                    let userDocRef = doc(db, "users", user.uid);
+                    let docSnap = await getDoc(userDocRef);
+
+                    if (!docSnap.exists()) {
+                        userDocRef = doc(db, "Users", user.uid);
+                        docSnap = await getDoc(userDocRef);
+                    }
 
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
+                        if (userDisplayNameElem) {
+                            userDisplayNameElem.innerText = userData.fullName || userData.name || user.displayName || user.email.split('@')[0];
+                        }
+                        if (userMobileElem) {
+                            userMobileElem.innerText = userData.mobile || userData.phone || "Not Provided";
+                        }
                         if (walletBalanceElem && userData.walletBalance !== undefined) {
                             walletBalanceElem.innerText = parseFloat(userData.walletBalance).toFixed(2);
                         }
                     } else {
-                        await setDoc(userDocRef, { walletBalance: 0.0, email: user.email, userId: user.uid }, { merge: true });
+                        if (userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
+                        if (userMobileElem) userMobileElem.innerText = "Not Provided";
                         if (walletBalanceElem) walletBalanceElem.innerText = "0.00";
+
+                        await setDoc(doc(db, "users", user.uid), {
+                            fullName: user.displayName || user.email.split('@')[0],
+                            email: user.email,
+                            walletBalance: 0.0,
+                            userId: user.uid
+                        }, { merge: true });
                     }
 
                     loadRecentTransactions(user.uid);
                 } catch (error) {
                     console.error("Profile load error:", error);
+                    if (userDisplayNameElem) userDisplayNameElem.innerText = user.email.split('@')[0];
+                    if (userMobileElem) userMobileElem.innerText = "Not Provided";
                 }
             }
         });
