@@ -42,9 +42,9 @@
         .browse-plan-btn { width: 100%; background: #0284c7; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
         .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
 
-        /* Reports Section Grid */
-        .reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
-        .report-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
+        /* Reports Grid */
+        .reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .report-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
         .report-card:hover { background: #0284c7; color: #ffffff; border-color: #0284c7; }
 
         /* Modal Styles */
@@ -57,6 +57,8 @@
         .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; margin-top: 10px; }
         .tx-table th, .tx-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
         .tx-table th { background: #f8fafc; color: #475569; }
+
+        .back-sub-btn { background: #e2e8f0; color: #0f172a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; float: right; }
     </style>
 </head>
 <body>
@@ -210,7 +212,7 @@
             </div>
         </div>
 
-        <!-- 3 Profile Section (A- User Info, B- Change/Forgot Password) -->
+        <!-- 3 Profile Section -->
         <div id="profileView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Profile Settings</h2>
             
@@ -228,26 +230,124 @@
             </div>
         </div>
 
-        <!-- 4 Reports Section (A- Recharge, B- History, C- Commission, D- Ledger) -->
+        <!-- 4 Reports Active Section -->
         <div id="reportsView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Reports & Summary</h2>
-            
-            <div class="reports-grid">
-                <div class="report-card" onclick="alert('A- Recharge Report coming soon!')">
-                    <div style="font-size: 24px; margin-bottom: 5px;">📲</div>
-                    <div>A- RECHARGE</div>
+            <!-- Main Report Cards Grid -->
+            <div id="reportsMainGrid">
+                <h2 style="color: #0b192c; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Reports & Summary</h2>
+                <div class="reports-grid">
+                    <div class="report-card" onclick="openReportSub('reportRecharge')">
+                        <div style="font-size: 24px; margin-bottom: 5px;">📲</div>
+                        <div>A- RECHARGE</div>
+                    </div>
+                    <div class="report-card" onclick="openReportSub('reportHistory')">
+                        <div style="font-size: 24px; margin-bottom: 5px;">📜</div>
+                        <div>B- HISTORY</div>
+                    </div>
+                    <div class="report-card" onclick="openReportSub('reportCommission')">
+                        <div style="font-size: 24px; margin-bottom: 5px;">💰</div>
+                        <div>C- COMMISSION</div>
+                    </div>
+                    <div class="report-card" onclick="openReportSub('reportLedger')">
+                        <div style="font-size: 24px; margin-bottom: 5px;">📊</div>
+                        <div>D- LEDGER</div>
+                    </div>
                 </div>
-                <div class="report-card" onclick="alert('B- History Report coming soon!')">
-                    <div style="font-size: 24px; margin-bottom: 5px;">📜</div>
-                    <div>B- HISTORY</div>
+            </div>
+
+            <!-- A- RECHARGE REPORT SUB-VIEW -->
+            <div id="reportRecharge" class="report-sub-view" style="display: none;">
+                <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
+                <h3 style="color: #0b192c; margin-bottom: 15px;">📲 A- Recharge Report</h3>
+                <div style="overflow-x: auto;">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>Txn ID</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Operator</th>
+                                <th>Number</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rechargeReportBody">
+                            <tr><td colspan="7" style="text-align:center;">Loading recharge logs...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="report-card" onclick="alert('C- Commission Report coming soon!')">
-                    <div style="font-size: 24px; margin-bottom: 5px;">💰</div>
-                    <div>C- COMMISSION</div>
+            </div>
+
+            <!-- B- HISTORY REPORT SUB-VIEW -->
+            <div id="reportHistory" class="report-sub-view" style="display: none;">
+                <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
+                <h3 style="color: #0b192c; margin-bottom: 15px;">📜 B- Full History Report</h3>
+                <div style="overflow-x: auto;">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Txn ID</th>
+                                <th>Details</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyReportBody">
+                            <tr><td colspan="5" style="text-align:center;">Loading history logs...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="report-card" onclick="alert('D- Ledger Report coming soon!')">
-                    <div style="font-size: 24px; margin-bottom: 5px;">📊</div>
-                    <div>D- LEDGER</div>
+            </div>
+
+            <!-- C- COMMISSION REPORT SUB-VIEW -->
+            <div id="reportCommission" class="report-sub-view" style="display: none;">
+                <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
+                <h3 style="color: #0b192c; margin-bottom: 15px;">💰 C- Commission Report</h3>
+                <div style="overflow-x: auto;">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Total Recharges</th>
+                                <th>Total Volume</th>
+                                <th>Comm Rate</th>
+                                <th>Earned Commission</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commissionReportBody">
+                            <tr>
+                                <td>Airtel / Jio / Vi / DTH</td>
+                                <td>All Active</td>
+                                <td>₹ Variable</td>
+                                <td>2.5% Avg</td>
+                                <td style="color: green; font-weight: bold;">Calculated on Settlement</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- D- LEDGER REPORT SUB-VIEW -->
+            <div id="reportLedger" class="report-sub-view" style="display: none;">
+                <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
+                <h3 style="color: #0b192c; margin-bottom: 15px;">📊 D- Ledger Account Passbook</h3>
+                <div style="overflow-x: auto;">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Particulars</th>
+                                <th>Credit (₹)</th>
+                                <th>Debit (₹)</th>
+                                <th>Closing Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgerReportBody">
+                            <tr><td colspan="5" style="text-align:center;">Loading ledger details...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -286,6 +386,9 @@
             if (sectionId === 'servicesView') {
                 closeAllServiceForms();
             }
+            if (sectionId === 'reportsView') {
+                closeReportSubs();
+            }
         }
 
         function openService(type) {
@@ -313,6 +416,17 @@
             
             if (mobileForm) mobileForm.style.display = 'none';
             if (dthForm) dthForm.style.display = 'none';
+        }
+
+        function openReportSub(subId) {
+            document.getElementById('reportsMainGrid').style.display = 'none';
+            document.querySelectorAll('.report-sub-view').forEach(el => el.style.display = 'none');
+            document.getElementById(subId).style.display = 'block';
+        }
+
+        function closeReportSubs() {
+            document.querySelectorAll('.report-sub-view').forEach(el => el.style.display = 'none');
+            document.getElementById('reportsMainGrid').style.display = 'block';
         }
 
         function openMobilePlansModal() {
@@ -392,10 +506,10 @@
         }
     </script>
 
-    <!-- Capital 'Users' Firestore Realtime Fetch & Auto-Logout Logic -->
+    <!-- Capital 'Users' Firestore Realtime Fetch & Strict Back Button / Logout Protection -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, getDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -411,20 +525,20 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        setPersistence(auth, browserSessionPersistence).catch(err => console.error(err));
+
         let currentUser = null;
         let activeUnsubscribe = null;
 
-        // Auto-Logout when exiting dashboard page or closing window
-        window.addEventListener('beforeunload', () => {
-            if (auth.currentUser) {
-                signOut(auth);
-            }
-        });
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 if (activeUnsubscribe) activeUnsubscribe();
-                window.location.href = "login.html";
+                window.location.replace("login.html");
             } else {
                 currentUser = user;
                 const userDisplayNameElem = document.getElementById("userDisplayName");
@@ -465,10 +579,10 @@
                 });
 
                 loadRecentTransactions(user.uid);
+                loadAllReportsData(user.uid);
             }
         });
 
-        // Change / Forgot Password Trigger
         document.getElementById("btnResetPassword").addEventListener("click", () => {
             if (currentUser && currentUser.email) {
                 sendPasswordResetEmail(auth, currentUser.email)
@@ -483,7 +597,6 @@
             }
         });
 
-        // RECHARGE SUBMIT HANDLER WITH WALLET GUARD
         document.getElementById("mobileRechargeForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const number = document.getElementById("mobileNumber").value.trim();
@@ -606,10 +719,81 @@
             }
         }
 
+        async function loadAllReportsData(userId) {
+            try {
+                let txRef = collection(db, "Users", userId, "recharges");
+                let q = query(txRef, orderBy("timestamp", "desc"));
+                let querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    txRef = collection(db, "users", userId, "recharges");
+                    q = query(txRef, orderBy("timestamp", "desc"));
+                    querySnapshot = await getDocs(q);
+                }
+
+                const rechBody = document.getElementById("rechargeReportBody");
+                const histBody = document.getElementById("historyReportBody");
+                const ledgBody = document.getElementById("ledgerReportBody");
+
+                if (querySnapshot.empty) {
+                    const emptyRow = `<tr><td colspan="7" style="text-align:center;">No data found.</td></tr>`;
+                    rechBody.innerHTML = emptyRow;
+                    histBody.innerHTML = emptyRow;
+                    ledgBody.innerHTML = emptyRow;
+                    return;
+                }
+
+                let rHtml = "", hHtml = "", lHtml = "";
+
+                querySnapshot.forEach((doc) => {
+                    const tx = doc.data();
+                    
+                    rHtml += `
+                        <tr>
+                            <td>${tx.txnId}</td>
+                            <td>${tx.date || 'N/A'}</td>
+                            <td>${tx.type || 'RECHARGE'}</td>
+                            <td>${tx.operator}</td>
+                            <td>${tx.number}</td>
+                            <td>₹${tx.amount}</td>
+                            <td><span style="color: green; font-weight: bold;">${tx.status}</span></td>
+                        </tr>
+                    `;
+
+                    hHtml += `
+                        <tr>
+                            <td>${tx.date || 'N/A'}</td>
+                            <td>${tx.txnId}</td>
+                            <td>${tx.type} - ${tx.operator} (${tx.number})</td>
+                            <td>₹${tx.amount}</td>
+                            <td><span style="color: green; font-weight: bold;">${tx.status}</span></td>
+                        </tr>
+                    `;
+
+                    lHtml += `
+                        <tr>
+                            <td>${tx.date || 'N/A'}</td>
+                            <td>Recharge Debit (${tx.operator})</td>
+                            <td>-</td>
+                            <td>₹${tx.amount}</td>
+                            <td>Updated Balance</td>
+                        </tr>
+                    `;
+                });
+
+                rechBody.innerHTML = rHtml;
+                histBody.innerHTML = hHtml;
+                ledgBody.innerHTML = lHtml;
+
+            } catch (e) {
+                console.error("Reports loading error", e);
+            }
+        }
+
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
             signOut(auth).then(() => {
-                window.location.href = "login.html";
+                window.location.replace("login.html");
             });
         });
     </script>
