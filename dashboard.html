@@ -239,20 +239,17 @@
         </div>
     </div>
 
-    <!-- UI Scripts with Navigation & Form Switcher Fix -->
+    <!-- UI Scripts -->
     <script>
-        // Navigation Views (Home, Profile, Reports, etc.) Switcher
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
 
-            // Reset/Hide open forms when switching views or clicking "1 Home Services"
             if (sectionId === 'servicesView') {
                 closeAllServiceForms();
             }
         }
 
-        // Service Buttons (Mobile, DTH, etc.) Form Toggler
         function openService(type) {
             closeAllServiceForms();
 
@@ -272,7 +269,6 @@
             }
         }
 
-        // Helper Function: Close & Clear Recharge Forms
         function closeAllServiceForms() {
             const mobileForm = document.getElementById('mobileForm');
             const dthForm = document.getElementById('dthForm');
@@ -281,7 +277,6 @@
             if (dthForm) dthForm.style.display = 'none';
         }
 
-        // BROWSE MOBILE PLANS POPUP
         function openMobilePlansModal() {
             const operator = document.getElementById("mobileOperator").value;
             if(!operator) return alert("Please select a Mobile Operator first!");
@@ -313,7 +308,6 @@
             document.getElementById("plansModal").style.display = "flex";
         }
 
-        // BROWSE DTH PLANS POPUP
         function openDthPlansModal() {
             const operator = document.getElementById("dthOperator").value;
             if(!operator) return alert("Please select a DTH Operator first!");
@@ -360,11 +354,11 @@
         }
     </script>
 
-    <!-- Firebase Realtime Profile & Balance Sync -->
+    <!-- Capital 'Users' Firestore Realtime Fetch Fix -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, getDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
@@ -380,11 +374,11 @@
         const db = getFirestore(app);
 
         let currentUser = null;
-        let unsubscribeUserListener = null;
+        let activeUnsubscribe = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                if (unsubscribeUserListener) unsubscribeUserListener();
+                if (activeUnsubscribe) activeUnsubscribe();
                 window.location.href = "login.html";
             } else {
                 currentUser = user;
@@ -393,48 +387,40 @@
                 const userMobileElem = document.getElementById("userMobileText");
                 const walletBalanceElem = document.getElementById("walletBalance");
 
-                // Set initial Auth Email
-                if (userEmailElem) userEmailElem.innerText = user.email || "Not Provided";
+                // Helper to update DOM UI
+                const updateUiData = (data) => {
+                    if (userDisplayNameElem) {
+                        userDisplayNameElem.innerText = data.fullName || data.name || data.displayName || user.displayName || (user.email ? user.email.split('@')[0] : "User");
+                    }
+                    if (userEmailElem) {
+                        userEmailElem.innerText = data.email || user.email || "Not Provided";
+                    }
+                    if (userMobileElem) {
+                        userMobileElem.innerText = data.mobile || data.phone || data.mobileNumber || "Not Provided";
+                    }
+                    if (walletBalanceElem) {
+                        const bal = data.walletBalance !== undefined ? data.walletBalance : (data.balance !== undefined ? data.balance : 0.0);
+                        walletBalanceElem.innerText = parseFloat(bal).toFixed(2);
+                    }
+                };
 
-                // Real-time listener on 'users' collection
-                const userDocRef = doc(db, "users", user.uid);
-                
-                unsubscribeUserListener = onSnapshot(userDocRef, async (docSnap) => {
+                // Check capital 'Users' first (as shown in your Cloud Firestore screenshot)
+                let primaryRef = doc(db, "Users", user.uid);
+                let secondaryRef = doc(db, "users", user.uid);
+
+                let primarySnap = await getDoc(primaryRef);
+                let targetRef = primarySnap.exists() ? primaryRef : secondaryRef;
+
+                // Attach Real-time listener for instant sync
+                activeUnsubscribe = onSnapshot(targetRef, (docSnap) => {
                     if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        
-                        // Sync Name Keys (fullName, name, displayName)
-                        const nameVal = userData.fullName || userData.name || userData.displayName || user.displayName || (user.email ? user.email.split('@')[0] : "User");
-                        if (userDisplayNameElem) userDisplayNameElem.innerText = nameVal;
-
-                        // Sync Mobile Keys (mobile, phone, mobileNumber)
-                        const mobileVal = userData.mobile || userData.phone || userData.mobileNumber || "Not Provided";
-                        if (userMobileElem) userMobileElem.innerText = mobileVal;
-
-                        // Sync Email Key
-                        const emailVal = userData.email || user.email || "Not Provided";
-                        if (userEmailElem) userEmailElem.innerText = emailVal;
-
-                        // Sync Balance Key (walletBalance, balance)
-                        const balanceVal = userData.walletBalance !== undefined ? userData.walletBalance : (userData.balance !== undefined ? userData.balance : 0.0);
-                        if (walletBalanceElem) walletBalanceElem.innerText = parseFloat(balanceVal).toFixed(2);
+                        updateUiData(docSnap.data());
                     } else {
-                        // Document missing -> Create automatically
-                        const defaultName = user.displayName || (user.email ? user.email.split('@')[0] : "User");
-                        if (userDisplayNameElem) userDisplayNameElem.innerText = defaultName;
-                        if (userMobileElem) userMobileElem.innerText = "Not Provided";
-                        if (walletBalanceElem) walletBalanceElem.innerText = "0.00";
-
-                        await setDoc(userDocRef, {
-                            fullName: defaultName,
-                            email: user.email,
-                            mobile: "Not Provided",
-                            walletBalance: 0.0,
-                            userId: user.uid
-                        }, { merge: true });
+                        // If document missing in target, fallback to Auth state details
+                        updateUiData({});
                     }
                 }, (error) => {
-                    console.error("Realtime fetch error:", error);
+                    console.error("Firestore Fetching Error:", error);
                 });
 
                 loadRecentTransactions(user.uid);
@@ -471,7 +457,12 @@
         async function processRechargeTransaction(number, operator, amount, type) {
             if (!currentUser) return alert("User session expired.");
 
-            const userRef = doc(db, "users", currentUser.uid);
+            // Priority document reference for transaction
+            let userRef = doc(db, "Users", currentUser.uid);
+            let checkSnap = await getDoc(userRef);
+            if (!checkSnap.exists()) {
+                userRef = doc(db, "users", currentUser.uid);
+            }
 
             try {
                 await runTransaction(db, async (transaction) => {
@@ -480,7 +471,6 @@
 
                     const currentBalance = userDoc.data().walletBalance !== undefined ? userDoc.data().walletBalance : (userDoc.data().balance || 0.0);
 
-                    // STRICT WALLET BALANCE GUARD
                     if (currentBalance < amount) {
                         throw new Error("INSUFFICIENT_BALANCE");
                     }
@@ -490,7 +480,7 @@
 
                     transaction.update(userRef, { walletBalance: newBalance });
 
-                    const userTxRef = doc(db, "users", currentUser.uid, "recharges", txnId);
+                    const userTxRef = doc(db, userRef.path, "recharges", txnId);
                     const globalTxRef = doc(db, "recharges", txnId);
 
                     const txData = {
@@ -524,9 +514,16 @@
         async function loadRecentTransactions(userId) {
             const txBody = document.getElementById("last5TxBody");
             try {
-                const txRef = collection(db, "users", userId, "recharges");
-                const q = query(txRef, orderBy("timestamp", "desc"), limit(5));
-                const querySnapshot = await getDocs(q);
+                // Fetch recharges subcollection from 'Users' or 'users'
+                let txRef = collection(db, "Users", userId, "recharges");
+                let q = query(txRef, orderBy("timestamp", "desc"), limit(5));
+                let querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    txRef = collection(db, "users", userId, "recharges");
+                    q = query(txRef, orderBy("timestamp", "desc"), limit(5));
+                    querySnapshot = await getDocs(q);
+                }
 
                 if (querySnapshot.empty) {
                     txBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td></tr>`;
