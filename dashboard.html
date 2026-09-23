@@ -186,7 +186,7 @@
                         </thead>
                         <tbody id="last5TxBody">
                             <tr>
-                                <td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td>
+                                <td colspan="7" style="text-align: center; color: #64748b;">Loading recent transactions...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -250,9 +250,20 @@
             </div>
         </div>
 
-        <!-- 5. BANK DETAILS (ADD MONEY) -->
+        <!-- 5. BANK DETAILS & ADD MONEY PAYMENT -->
         <div id="bankView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Bank Details for Add Money</h2>
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Add Money to Wallet (PayU Online)</h2>
+            
+            <!-- PayU Online Add Money Form -->
+            <div style="background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Enter Amount to Add (₹)</label>
+                    <input type="number" id="addMoneyInputAmount" min="10" placeholder="Minimum ₹10" required>
+                </div>
+                <button id="btnOnlineAddMoney" class="add-money-btn" style="width: 100%; background: #16a34a;">PROCEED TO ADD MONEY (PAYU)</button>
+            </div>
+
+            <h3 style="color: #0b192c; margin-bottom: 10px; font-size: 16px;">Manual Bank Details</h3>
             <p style="margin-bottom: 8px;"><strong>Account Holder:</strong> DEEPEN KUMAR YADAV</p>
             <p style="margin-bottom: 8px;"><strong>Bank Name:</strong> BANDHAN BANK</p>
             <p style="margin-bottom: 8px;"><strong>IFSC Code:</strong> BDBL0001394</p>
@@ -299,7 +310,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
@@ -316,10 +327,13 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        let currentUser = null;
+
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.href = "login.html";
             } else {
+                currentUser = user;
                 const userDisplayNameElem = document.getElementById("userDisplayName");
                 const userEmailElem = document.getElementById("userEmailText");
                 const userMobileElem = document.getElementById("userMobileText");
@@ -328,20 +342,25 @@
                 if (userEmailElem) userEmailElem.innerText = user.email;
 
                 try {
-                    const userDocRef = doc(db, "Users", user.uid);
+                    const userDocRef = doc(db, "users", user.uid);
                     const docSnap = await getDoc(userDocRef);
 
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        if (userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || "Not Provided";
+                        if (userDisplayNameElem) userDisplayNameElem.innerText = userData.fullName || user.email.split('@')[0];
                         if (userMobileElem) userMobileElem.innerText = userData.mobile || "Not Provided";
                         if (walletBalanceElem && userData.walletBalance !== undefined) {
                             walletBalanceElem.innerText = parseFloat(userData.walletBalance).toFixed(2);
                         }
                     } else {
-                        if (userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
-                        if (userMobileElem) userMobileElem.innerText = "Not Provided";
+                        // Auto-create document with 0 balance if missing
+                        await setDoc(userDocRef, { walletBalance: 0.0, email: user.email, userId: user.uid }, { merge: true });
+                        if (walletBalanceElem) walletBalanceElem.innerText = "0.00";
                     }
+
+                    // Load Recent Transactions
+                    loadRecentTransactions(user.uid);
+
                 } catch (error) {
                     console.error("Profile load error:", error);
                 }
@@ -355,6 +374,187 @@
             }
         });
 
+        // 🛑 WALLET BALANCE GUARD & MOBILE RECHARGE PROCESSOR
+        document.getElementById("mobileRechargeForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const number = document.getElementById("mobileNumber").value.trim();
+            const operator = document.getElementById("mobileOperator").value;
+            const amount = parseFloat(document.getElementById("mobileAmount").value);
+
+            if (number.length !== 10) return alert("Enter valid 10-digit mobile number");
+            if (!operator) return alert("Please select an operator");
+            if (!amount || amount <= 0) return alert("Please enter valid amount");
+
+            await processRechargeTransaction(number, operator, amount, "MOBILE");
+        });
+
+        // 🛑 WALLET BALANCE GUARD & DTH RECHARGE PROCESSOR
+        document.getElementById("dthRechargeForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const number = document.getElementById("dthNumber").value.trim();
+            const operator = document.getElementById("dthOperator").value;
+            const amount = parseFloat(document.getElementById("dthAmount").value);
+
+            if (!number) return alert("Enter Customer ID");
+            if (!operator) return alert("Please select an operator");
+            if (!amount || amount <= 0) return alert("Please enter valid amount");
+
+            await processRechargeTransaction(number, operator, amount, "DTH");
+        });
+
+        // Core Atomic Transaction Processor Function
+        async function processRechargeTransaction(number, operator, amount, type) {
+            if (!currentUser) return alert("User session expired. Please relogin.");
+
+            const userRef = doc(db, "users", currentUser.uid);
+
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const userDoc = await transaction.get(userRef);
+                    if (!userDoc.exists()) {
+                        throw new Error("User record not found in database!");
+                    }
+
+                    const currentBalance = userDoc.data().walletBalance || 0.0;
+
+                    // 🛑 Insufficient Balance Blocker
+                    if (currentBalance < amount) {
+                        throw new Error("INSUFFICIENT_BALANCE");
+                    }
+
+                    const txnId = type + Date.now();
+                    const newBalance = currentBalance - amount;
+
+                    // Update Wallet Balance
+                    transaction.update(userRef, { walletBalance: newBalance });
+
+                    // Save Entry in User History
+                    const userTxRef = doc(db, "users", currentUser.uid, "recharges", txnId);
+                    const globalTxRef = doc(db, "recharges", txnId);
+
+                    const txData = {
+                        txnId: txnId,
+                        userId: currentUser.uid,
+                        number: number,
+                        operator: operator,
+                        amount: amount.toString(),
+                        status: "SUCCESS",
+                        type: type,
+                        date: new Date().toLocaleString(),
+                        timestamp: serverTimestamp()
+                    };
+
+                    transaction.set(userTxRef, txData);
+                    transaction.set(globalTxRef, txData);
+                });
+
+                alert("🎉 Recharge Request Submitted Successfully!");
+                document.getElementById("mobileForm").reset();
+                document.getElementById("dthForm").reset();
+                location.reload();
+
+            } catch (error) {
+                if (error.message === "INSUFFICIENT_BALANCE") {
+                    alert("❌ Insufficient Wallet Balance! Please Add Money to proceed.");
+                } else {
+                    alert("Transaction Failed: " + error.message);
+                }
+            }
+        }
+
+        // Fetch Last 5 Transactions
+        async function loadRecentTransactions(userId) {
+            const txBody = document.getElementById("last5TxBody");
+            try {
+                const txRef = collection(db, "users", userId, "recharges");
+                const q = query(txRef, orderBy("timestamp", "desc"), limit(5));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    txBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td></tr>`;
+                    return;
+                }
+
+                let html = "";
+                let index = 1;
+                querySnapshot.forEach((doc) => {
+                    const tx = doc.data();
+                    html += `
+                        <tr>
+                            <td>${index++}</td>
+                            <td>${tx.date || 'N/A'}</td>
+                            <td>${tx.txnId}</td>
+                            <td>${tx.operator}</td>
+                            <td>${tx.number}</td>
+                            <td>₹${tx.amount}</td>
+                            <td><span style="color: green; font-weight: bold;">${tx.status}</span></td>
+                        </tr>
+                    `;
+                });
+                txBody.innerHTML = html;
+            } catch (err) {
+                console.error("Error loading transactions:", err);
+                txBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Error loading history.</td></tr>`;
+            }
+        }
+
+        // Online PayU Add Money Trigger
+        document.getElementById("btnOnlineAddMoney").addEventListener("click", async () => {
+            const amountInput = document.getElementById("addMoneyInputAmount").value;
+            if (!amountInput || amountInput < 10) return alert("Please enter valid amount (Min ₹10)");
+            if (!currentUser) return alert("User not logged in!");
+
+            try {
+                const response = await fetch('https://us-central1-pay4earn-recharge.cloudfunctions.net/generatePayuHash', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amountInput,
+                        productinfo: "WalletTopup",
+                        firstname: currentUser.displayName || "User",
+                        email: currentUser.email,
+                        userId: currentUser.uid
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // PayU Auto Form Redirect
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'https://secure.payu.in/_payment';
+
+                    const params = {
+                        key: data.key,
+                        txnid: data.txnid,
+                        amount: data.amount,
+                        productinfo: data.productinfo,
+                        firstname: data.firstname,
+                        email: data.email,
+                        phone: "9999999999",
+                        surl: data.surl,
+                        furl: data.furl,
+                        hash: data.hash
+                    };
+
+                    for (const key in params) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = params[key];
+                        form.appendChild(input);
+                    }
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    alert("Failed to initiate PayU payment hash.");
+                }
+            } catch (e) {
+                alert("Error connecting to payment gateway: " + e.message);
+            }
+        });
+
+        // Logout
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
             signOut(auth).then(() => {
