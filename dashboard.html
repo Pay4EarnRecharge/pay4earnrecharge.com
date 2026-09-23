@@ -360,11 +360,11 @@
         }
     </script>
 
-    <!-- Firebase Logic -->
+    <!-- Firebase Realtime Profile & Balance Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, setDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
@@ -380,9 +380,11 @@
         const db = getFirestore(app);
 
         let currentUser = null;
+        let unsubscribeUserListener = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
+                if (unsubscribeUserListener) unsubscribeUserListener();
                 window.location.href = "login.html";
             } else {
                 currentUser = user;
@@ -391,47 +393,51 @@
                 const userMobileElem = document.getElementById("userMobileText");
                 const walletBalanceElem = document.getElementById("walletBalance");
 
-                if (userEmailElem) userEmailElem.innerText = user.email;
+                // Set initial Auth Email
+                if (userEmailElem) userEmailElem.innerText = user.email || "Not Provided";
 
-                try {
-                    let userDocRef = doc(db, "users", user.uid);
-                    let docSnap = await getDoc(userDocRef);
-
-                    if (!docSnap.exists()) {
-                        userDocRef = doc(db, "Users", user.uid);
-                        docSnap = await getDoc(userDocRef);
-                    }
-
+                // Real-time listener on 'users' collection
+                const userDocRef = doc(db, "users", user.uid);
+                
+                unsubscribeUserListener = onSnapshot(userDocRef, async (docSnap) => {
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        if (userDisplayNameElem) {
-                            userDisplayNameElem.innerText = userData.fullName || userData.name || user.displayName || user.email.split('@')[0];
-                        }
-                        if (userMobileElem) {
-                            userMobileElem.innerText = userData.mobile || userData.phone || "Not Provided";
-                        }
-                        if (walletBalanceElem && userData.walletBalance !== undefined) {
-                            walletBalanceElem.innerText = parseFloat(userData.walletBalance).toFixed(2);
-                        }
+                        
+                        // Sync Name Keys (fullName, name, displayName)
+                        const nameVal = userData.fullName || userData.name || userData.displayName || user.displayName || (user.email ? user.email.split('@')[0] : "User");
+                        if (userDisplayNameElem) userDisplayNameElem.innerText = nameVal;
+
+                        // Sync Mobile Keys (mobile, phone, mobileNumber)
+                        const mobileVal = userData.mobile || userData.phone || userData.mobileNumber || "Not Provided";
+                        if (userMobileElem) userMobileElem.innerText = mobileVal;
+
+                        // Sync Email Key
+                        const emailVal = userData.email || user.email || "Not Provided";
+                        if (userEmailElem) userEmailElem.innerText = emailVal;
+
+                        // Sync Balance Key (walletBalance, balance)
+                        const balanceVal = userData.walletBalance !== undefined ? userData.walletBalance : (userData.balance !== undefined ? userData.balance : 0.0);
+                        if (walletBalanceElem) walletBalanceElem.innerText = parseFloat(balanceVal).toFixed(2);
                     } else {
-                        if (userDisplayNameElem) userDisplayNameElem.innerText = user.displayName || user.email.split('@')[0];
+                        // Document missing -> Create automatically
+                        const defaultName = user.displayName || (user.email ? user.email.split('@')[0] : "User");
+                        if (userDisplayNameElem) userDisplayNameElem.innerText = defaultName;
                         if (userMobileElem) userMobileElem.innerText = "Not Provided";
                         if (walletBalanceElem) walletBalanceElem.innerText = "0.00";
 
-                        await setDoc(doc(db, "users", user.uid), {
-                            fullName: user.displayName || user.email.split('@')[0],
+                        await setDoc(userDocRef, {
+                            fullName: defaultName,
                             email: user.email,
+                            mobile: "Not Provided",
                             walletBalance: 0.0,
                             userId: user.uid
                         }, { merge: true });
                     }
+                }, (error) => {
+                    console.error("Realtime fetch error:", error);
+                });
 
-                    loadRecentTransactions(user.uid);
-                } catch (error) {
-                    console.error("Profile load error:", error);
-                    if (userDisplayNameElem) userDisplayNameElem.innerText = user.email.split('@')[0];
-                    if (userMobileElem) userMobileElem.innerText = "Not Provided";
-                }
+                loadRecentTransactions(user.uid);
             }
         });
 
@@ -472,7 +478,7 @@
                     const userDoc = await transaction.get(userRef);
                     if (!userDoc.exists()) throw new Error("User record not found!");
 
-                    const currentBalance = userDoc.data().walletBalance || 0.0;
+                    const currentBalance = userDoc.data().walletBalance !== undefined ? userDoc.data().walletBalance : (userDoc.data().balance || 0.0);
 
                     // STRICT WALLET BALANCE GUARD
                     if (currentBalance < amount) {
