@@ -42,6 +42,23 @@
         .browse-plan-btn { width: 100%; background: #0284c7; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
         .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
 
+        /* Add Money Amount Selector Buttons */
+        .amt-btn {
+            background: #ffffff;
+            border: 2px solid #0284c7;
+            color: #0284c7;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .amt-btn:hover, .amt-btn.selected {
+            background: #0284c7;
+            color: #ffffff;
+        }
+
         /* Reports Grid */
         .reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .report-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
@@ -232,7 +249,6 @@
 
         <!-- 4 Reports Active Section -->
         <div id="reportsView" class="view-section content-card">
-            <!-- Main Report Cards Grid -->
             <div id="reportsMainGrid">
                 <h2 style="color: #0b192c; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Reports & Summary</h2>
                 <div class="reports-grid">
@@ -352,15 +368,50 @@
             </div>
         </div>
 
-        <!-- 5 Add Money View -->
+        <!-- 5 Add Money View (Fixed Amounts & PhonePe QR) -->
         <div id="bankView" class="view-section content-card">
-            <h2 style="color: #0b192c; margin-bottom: 15px;">Add Money to Wallet (PayU Online)</h2>
-            <div style="background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 20px;">
+            <h2 style="color: #0b192c; margin-bottom: 15px;">Add Money to Wallet (PhonePe QR)</h2>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 20px;">
+                
                 <div class="form-group">
-                    <label>Enter Amount to Add (₹)</label>
-                    <input type="number" id="addMoneyInputAmount" min="10" placeholder="Minimum ₹10" required>
+                    <label style="font-weight: bold; margin-bottom: 10px; display: block;">Select Amount to Add (₹)</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                        <button type="button" class="amt-btn" onclick="setFixedAmount(10)">₹ 10</button>
+                        <button type="button" class="amt-btn" onclick="setFixedAmount(100)">₹ 100</button>
+                        <button type="button" class="amt-btn" onclick="setFixedAmount(349)">₹ 349</button>
+                        <button type="button" class="amt-btn" onclick="setFixedAmount(499)">₹ 499</button>
+                        <button type="button" class="amt-btn" onclick="setFixedAmount(999)">₹ 999</button>
+                        <button type="button" class="amt-btn" onclick="setFixedAmount(1499)">₹ 1499</button>
+                        <button type="button" class="amt-btn" onclick="setFixedAmount(1999)">₹ 1999</button>
+                    </div>
                 </div>
-                <button id="btnOnlineAddMoney" class="add-money-btn" style="width: 100%; background: #16a34a;">PROCEED TO ADD MONEY (PAYU)</button>
+
+                <div class="form-group">
+                    <label>Selected Amount (₹)</label>
+                    <input type="number" id="addMoneyInputAmount" readonly placeholder="Click any amount above" style="background: #e2e8f0; font-weight: bold; font-size: 16px;" required>
+                </div>
+
+                <!-- PhonePe QR / UPI Box -->
+                <div id="qrPaymentBox" style="display: none; text-align: center; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #2563eb; margin-top: 15px;">
+                    <h3 style="color: #5f259f; margin-bottom: 5px;">💜 PhonePe Business Payment</h3>
+                    <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Merchant: <strong>Digital Shop Traders</strong></p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 5px;">Pay to UPI ID:</p>
+                        <div style="background: #f1f5f9; padding: 8px; border-radius: 4px; font-weight: bold; color: #0b192c; font-size: 14px;">
+                            UPI ID: <span id="displayUpiId">Q239429182@ybl</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="text-align: left; margin-top: 15px;">
+                        <label>Enter 12-Digit UTR / Transaction Ref No. after payment:</label>
+                        <input type="text" id="utrNumberInput" maxlength="12" placeholder="e.g. 4239XXXXXXXX">
+                    </div>
+
+                    <button id="btnSubmitUtr" class="add-money-btn" style="width: 100%; background: #16a34a; font-size: 16px;">SUBMIT PAYMENT REQUEST</button>
+                </div>
+
             </div>
         </div>
 
@@ -379,6 +430,21 @@
 
     <!-- UI Scripts -->
     <script>
+        const allowedAmounts = [10, 100, 349, 499, 999, 1499, 1999];
+
+        function setFixedAmount(amt) {
+            if (!allowedAmounts.includes(amt)) {
+                alert("Only allowed amounts: 10, 100, 349, 499, 999, 1499, 1999");
+                return;
+            }
+
+            document.querySelectorAll('.amt-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+
+            document.getElementById("addMoneyInputAmount").value = amt;
+            document.getElementById("qrPaymentBox").style.display = "block";
+        }
+
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
@@ -440,7 +506,10 @@
                 { amount: "199", desc: "1.5GB/day, Unlimited Calls, 28 Days" },
                 { amount: "239", desc: "1.5GB/day, 5G Unlimited, 28 Days" },
                 { amount: "299", desc: "2GB/day, Unlimited Calls, 28 Days" },
+                { amount: "349", desc: "2GB/day, Unlimited Calls, 28 Days" },
+                { amount: "499", desc: "3GB/day, Unlimited Calls, 28 Days" },
                 { amount: "666", desc: "1.5GB/day, Unlimited Calls, 84 Days" },
+                { amount: "999", desc: "2GB/day, Unlimited Calls, 98 Days" },
                 { amount: "2999", desc: "2.5GB/day, 365 Days Validity" }
             ];
 
@@ -506,11 +575,11 @@
         }
     </script>
 
-    <!-- Capital 'Users' Firestore Realtime Fetch & Strict Back Button / Logout Protection -->
+    <!-- Firebase SDK & Core Operations Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, getDoc, runTransaction, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, getDoc, runTransaction, collection, query, orderBy, limit, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
@@ -579,8 +648,15 @@
                 });
 
                 loadRecentTransactions(user.uid);
-                loadAllReportsData(user.uid);
             }
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            signOut(auth).then(() => {
+                window.location.replace("login.html");
+            }).catch((error) => {
+                alert("Logout Error: " + error.message);
+            });
         });
 
         document.getElementById("btnResetPassword").addEventListener("click", () => {
@@ -597,205 +673,179 @@
             }
         });
 
+        // Submit UTR Request for Add Money
+        document.getElementById("btnSubmitUtr").addEventListener("click", async () => {
+            if (!currentUser) return alert("Please login first!");
+
+            const amt = parseInt(document.getElementById("addMoneyInputAmount").value);
+            const utr = document.getElementById("utrNumberInput").value.trim();
+
+            if (!allowedAmounts.includes(amt)) {
+                return alert("Invalid amount! Please select from 10, 100, 349, 499, 999, 1499, 1999.");
+            }
+
+            if (!utr || utr.length !== 12) {
+                return alert("Please enter valid 12-digit UTR/Transaction Number.");
+            }
+
+            try {
+                const addMoneyRef = doc(collection(db, "Users", currentUser.uid, "add_money_requests"));
+                await setDoc(addMoneyRef, {
+                    requestId: addMoneyRef.id,
+                    amount: amt,
+                    utrNumber: utr,
+                    upiId: "Q239429182@ybl",
+                    merchant: "Digital Shop Traders",
+                    status: "Pending",
+                    date: new Date().toLocaleString(),
+                    timestamp: serverTimestamp()
+                });
+
+                alert("Payment request submitted successfully! Wallet will update after verification.");
+                document.getElementById("utrNumberInput").value = "";
+                document.getElementById("qrPaymentBox").style.display = "none";
+                document.getElementById("addMoneyInputAmount").value = "";
+                document.querySelectorAll('.amt-btn').forEach(btn => btn.classList.remove('selected'));
+
+            } catch (err) {
+                alert("Failed to submit request: " + err.message);
+            }
+        });
+
+        // Mobile Recharge Form Submission
         document.getElementById("mobileRechargeForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const number = document.getElementById("mobileNumber").value.trim();
-            const operator = document.getElementById("mobileOperator").value;
-            const amount = parseFloat(document.getElementById("mobileAmount").value);
-
-            if (number.length !== 10) return alert("Enter valid 10-digit mobile number");
-            if (!operator) return alert("Please select an operator");
-            if (!amount || amount <= 0) return alert("Please enter valid amount");
-
-            await processRechargeTransaction(number, operator, amount, "MOBILE");
+            executeRecharge('mobile');
         });
 
+        // DTH Recharge Form Submission
         document.getElementById("dthRechargeForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const number = document.getElementById("dthNumber").value.trim();
-            const operator = document.getElementById("dthOperator").value;
-            const amount = parseFloat(document.getElementById("dthAmount").value);
-
-            if (!number) return alert("Enter Customer ID");
-            if (!operator) return alert("Please select an operator");
-            if (!amount || amount <= 0) return alert("Please enter valid amount");
-
-            await processRechargeTransaction(number, operator, amount, "DTH");
+            executeRecharge('dth');
         });
 
-        async function processRechargeTransaction(number, operator, amount, type) {
-            if (!currentUser) return alert("User session expired.");
+        async function executeRecharge(type) {
+            if (!currentUser) return alert("User session expired. Please login again.");
 
-            let userRef = doc(db, "Users", currentUser.uid);
-            let checkSnap = await getDoc(userRef);
-            if (!checkSnap.exists()) {
-                userRef = doc(db, "users", currentUser.uid);
+            let number, operator, amount;
+            let operatorCode = "";
+            let circleCode = "2"; // Default Circle Code
+
+            if (type === 'mobile') {
+                number = document.getElementById("mobileNumber").value.trim();
+                operator = document.getElementById("mobileOperator").value;
+                amount = parseFloat(document.getElementById("mobileAmount").value);
+
+                if (operator === 'Jio') operatorCode = 'RC';
+                else if (operator === 'Airtel') operatorCode = 'A';
+                else if (operator === 'Vi') operatorCode = 'V';
+                else if (operator === 'BSNL') operatorCode = 'BT';
+            } else {
+                number = document.getElementById("dthNumber").value.trim();
+                operator = document.getElementById("dthOperator").value;
+                amount = parseFloat(document.getElementById("dthAmount").value);
+
+                if (operator === 'Tata Play') operatorCode = 'TTV';
+                else if (operator === 'Airtel DTH') operatorCode = 'ATV';
+                else if (operator === 'Dish TV') operatorCode = 'DTV';
+                else if (operator === 'Sun Direct') operatorCode = 'STV';
+                else if (operator === 'd2h') operatorCode = 'VTV';
             }
 
+            if (!number || !operator || isNaN(amount) || amount <= 0) {
+                return alert("Please fill all recharge fields correctly.");
+            }
+
+            const orderId = "P4E" + Math.floor(1000000000 + Math.random() * 9000000000);
+            const userRef = doc(db, "Users", currentUser.uid);
+
             try {
+                // Step 1: Wallet Balance Check & Deduction inside Firestore Transaction
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(userRef);
-                    if (!userDoc.exists()) throw new Error("User record not found!");
+                    if (!userDoc.exists()) throw "User account not found!";
 
-                    const currentBalance = userDoc.data().walletBalance !== undefined ? userDoc.data().walletBalance : (userDoc.data().balance || 0.0);
-
+                    const currentBalance = userDoc.data().walletBalance !== undefined ? userDoc.data().walletBalance : (userDoc.data().balance || 0);
                     if (currentBalance < amount) {
-                        throw new Error("INSUFFICIENT_BALANCE");
+                        throw "Insufficient wallet balance! Please add money.";
                     }
 
-                    const txnId = type + Date.now();
                     const newBalance = currentBalance - amount;
-
                     transaction.update(userRef, { walletBalance: newBalance });
-
-                    const userTxRef = doc(db, userRef.path, "recharges", txnId);
-                    const globalTxRef = doc(db, "recharges", txnId);
-
-                    const txData = {
-                        txnId: txnId,
-                        userId: currentUser.uid,
-                        number: number,
-                        operator: operator,
-                        amount: amount.toString(),
-                        status: "SUCCESS",
-                        type: type,
-                        date: new Date().toLocaleString(),
-                        timestamp: serverTimestamp()
-                    };
-
-                    transaction.set(userTxRef, txData);
-                    transaction.set(globalTxRef, txData);
                 });
 
-                alert("🎉 Recharge Request Submitted Successfully!");
-                location.reload();
+                // Step 2: Trigger Backend API Proxy to A1Topup
+                const backendResponse = await fetch("https://pay4earn-backend.onrender.com/api/recharge", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: "500011", // Your A1Topup Username
+                        pwd: "123",       // Your A1Topup Password
+                        circlecode: circleCode,
+                        operatorcode: operatorCode,
+                        number: number,
+                        amount: amount,
+                        orderid: orderId
+                    })
+                });
+
+                const apiResult = await backendResponse.json();
+
+                // Step 3: Save transaction log in Firebase
+                const rechargeRef = doc(collection(db, "Users", currentUser.uid, "recharges"));
+                await setDoc(rechargeRef, {
+                    orderId: orderId,
+                    operator: operator,
+                    number: number,
+                    amount: amount.toString(),
+                    status: apiResult.status || "Success",
+                    opid: apiResult.opid || "N/A",
+                    date: new Date().toLocaleString(),
+                    timestamp: serverTimestamp()
+                });
+
+                alert("Recharge processed successfully for " + number + " (₹" + amount + ")");
+                closeAllServiceForms();
+                loadRecentTransactions(currentUser.uid);
 
             } catch (error) {
-                if (error.message === "INSUFFICIENT_BALANCE") {
-                    alert("❌ Insufficient Wallet Balance! Please Add Money to proceed.");
-                } else {
-                    alert("Transaction Failed: " + error.message);
-                }
+                alert("Recharge Failed: " + (typeof error === 'string' ? error : error.message));
             }
         }
 
-        async function loadRecentTransactions(userId) {
-            const txBody = document.getElementById("last5TxBody");
+        async function loadRecentTransactions(uid) {
             try {
-                let txRef = collection(db, "Users", userId, "recharges");
-                let q = query(txRef, orderBy("timestamp", "desc"), limit(5));
-                let querySnapshot = await getDocs(q);
+                const q = query(collection(db, "Users", uid, "recharges"), orderBy("timestamp", "desc"), limit(5));
+                const querySnapshot = await getDocs(q);
+                
+                let txRows = "";
+                let count = 1;
 
-                if (querySnapshot.empty) {
-                    txRef = collection(db, "users", userId, "recharges");
-                    q = query(txRef, orderBy("timestamp", "desc"), limit(5));
-                    querySnapshot = await getDocs(q);
-                }
-
-                if (querySnapshot.empty) {
-                    txBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td></tr>`;
-                    return;
-                }
-
-                let html = "";
-                let index = 1;
-                querySnapshot.forEach((doc) => {
-                    const tx = doc.data();
-                    html += `
+                querySnapshot.forEach((docSnap) => {
+                    const tx = docSnap.data();
+                    txRows += `
                         <tr>
-                            <td>${index++}</td>
-                            <td>${tx.date || 'N/A'}</td>
-                            <td>${tx.txnId}</td>
-                            <td>${tx.operator}</td>
-                            <td>${tx.number}</td>
-                            <td>₹${tx.amount}</td>
-                            <td><span style="color: green; font-weight: bold;">${tx.status}</span></td>
+                            <td>${count}</td>
+                            <td>${tx.date || "Recent"}</td>
+                            <td>${tx.orderId || docSnap.id}</td>
+                            <td>${tx.operator || "N/A"}</td>
+                            <td>${tx.number || "N/A"}</td>
+                            <td>₹${tx.amount || "0"}</td>
+                            <td style="color: green; font-weight: bold;">${(tx.status || "Success").toUpperCase()}</td>
                         </tr>
                     `;
+                    count++;
                 });
-                txBody.innerHTML = html;
+
+                if (txRows === "") {
+                    txRows = `<tr><td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td></tr>`;
+                }
+
+                document.getElementById("last5TxBody").innerHTML = txRows;
             } catch (err) {
-                txBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Error loading history.</td></tr>`;
+                console.error("Error loading transactions:", err);
             }
         }
-
-        async function loadAllReportsData(userId) {
-            try {
-                let txRef = collection(db, "Users", userId, "recharges");
-                let q = query(txRef, orderBy("timestamp", "desc"));
-                let querySnapshot = await getDocs(q);
-
-                if (querySnapshot.empty) {
-                    txRef = collection(db, "users", userId, "recharges");
-                    q = query(txRef, orderBy("timestamp", "desc"));
-                    querySnapshot = await getDocs(q);
-                }
-
-                const rechBody = document.getElementById("rechargeReportBody");
-                const histBody = document.getElementById("historyReportBody");
-                const ledgBody = document.getElementById("ledgerReportBody");
-
-                if (querySnapshot.empty) {
-                    const emptyRow = `<tr><td colspan="7" style="text-align:center;">No data found.</td></tr>`;
-                    rechBody.innerHTML = emptyRow;
-                    histBody.innerHTML = emptyRow;
-                    ledgBody.innerHTML = emptyRow;
-                    return;
-                }
-
-                let rHtml = "", hHtml = "", lHtml = "";
-
-                querySnapshot.forEach((doc) => {
-                    const tx = doc.data();
-                    
-                    rHtml += `
-                        <tr>
-                            <td>${tx.txnId}</td>
-                            <td>${tx.date || 'N/A'}</td>
-                            <td>${tx.type || 'RECHARGE'}</td>
-                            <td>${tx.operator}</td>
-                            <td>${tx.number}</td>
-                            <td>₹${tx.amount}</td>
-                            <td><span style="color: green; font-weight: bold;">${tx.status}</span></td>
-                        </tr>
-                    `;
-
-                    hHtml += `
-                        <tr>
-                            <td>${tx.date || 'N/A'}</td>
-                            <td>${tx.txnId}</td>
-                            <td>${tx.type} - ${tx.operator} (${tx.number})</td>
-                            <td>₹${tx.amount}</td>
-                            <td><span style="color: green; font-weight: bold;">${tx.status}</span></td>
-                        </tr>
-                    `;
-
-                    lHtml += `
-                        <tr>
-                            <td>${tx.date || 'N/A'}</td>
-                            <td>Recharge Debit (${tx.operator})</td>
-                            <td>-</td>
-                            <td>₹${tx.amount}</td>
-                            <td>Updated Balance</td>
-                        </tr>
-                    `;
-                });
-
-                rechBody.innerHTML = rHtml;
-                histBody.innerHTML = hHtml;
-                ledgBody.innerHTML = lHtml;
-
-            } catch (e) {
-                console.error("Reports loading error", e);
-            }
-        }
-
-        document.getElementById("logoutBtn").addEventListener("click", (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                window.location.replace("login.html");
-            });
-        });
     </script>
 </body>
 </html>
