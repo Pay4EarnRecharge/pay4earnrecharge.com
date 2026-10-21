@@ -145,12 +145,14 @@
                     </div>
                     <div class="form-group">
                         <label>Select Operator</label>
+                        <!-- Updated value options with A1Topup exact Operator Codes -->
                         <select id="mobileOperator" required>
                             <option value="">-- Choose Operator --</option>
-                            <option value="Jio">Jio</option>
-                            <option value="Airtel">Airtel</option>
-                            <option value="Vi">Vodafone Idea (Vi)</option>
-                            <option value="BSNL">BSNL</option>
+                            <option value="RC">Jio (RC)</option>
+                            <option value="A">Airtel (A)</option>
+                            <option value="V">Vodafone Idea - Vi (V)</option>
+                            <option value="BT">BSNL TopUp (BT)</option>
+                            <option value="BR">BSNL Special (BR)</option>
                         </select>
                     </div>
                     
@@ -177,13 +179,14 @@
                     </div>
                     <div class="form-group">
                         <label>Select Operator</label>
+                        <!-- Updated value options with A1Topup exact Operator Codes -->
                         <select id="dthOperator" required>
                             <option value="">-- Choose Operator --</option>
-                            <option value="Tata Play">Tata Play</option>
-                            <option value="Airtel DTH">Airtel Digital TV</option>
-                            <option value="Dish TV">Dish TV</option>
-                            <option value="Sun Direct">Sun Direct</option>
-                            <option value="d2h">d2h</option>
+                            <option value="TTV">Tata Play (TTV)</option>
+                            <option value="ATV">Airtel Digital TV (ATV)</option>
+                            <option value="DTV">Dish TV (DTV)</option>
+                            <option value="STV">Sun Direct (STV)</option>
+                            <option value="VTV">d2h / Videocon (VTV)</option>
                         </select>
                     </div>
 
@@ -206,7 +209,7 @@
                             <tr>
                                 <th>S#</th>
                                 <th>Date</th>
-                                <th>Req ID</th>
+                                <th>Req ID / Order ID</th>
                                 <th>Provider</th>
                                 <th>Number</th>
                                 <th>Amount</th>
@@ -274,7 +277,6 @@
                 </div>
             </div>
 
-            <!-- A- RECHARGE REPORT SUB-VIEW -->
             <div id="reportRecharge" class="report-sub-view" style="display: none;">
                 <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
                 <h3 style="color: #0b192c; margin-bottom: 15px;">📲 A- Recharge Report</h3>
@@ -298,7 +300,6 @@
                 </div>
             </div>
 
-            <!-- B- HISTORY REPORT SUB-VIEW -->
             <div id="reportHistory" class="report-sub-view" style="display: none;">
                 <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
                 <h3 style="color: #0b192c; margin-bottom: 15px;">📜 B- Full History Report</h3>
@@ -320,7 +321,6 @@
                 </div>
             </div>
 
-            <!-- C- COMMISSION REPORT SUB-VIEW -->
             <div id="reportCommission" class="report-sub-view" style="display: none;">
                 <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
                 <h3 style="color: #0b192c; margin-bottom: 15px;">💰 C- Commission Report</h3>
@@ -348,7 +348,6 @@
                 </div>
             </div>
 
-            <!-- D- LEDGER REPORT SUB-VIEW -->
             <div id="reportLedger" class="report-sub-view" style="display: none;">
                 <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
                 <h3 style="color: #0b192c; margin-bottom: 15px;">📊 D- Ledger Account Passbook</h3>
@@ -447,7 +446,6 @@
 
     <!-- Firebase Script and Logic -->
     <script>
-        // Exact Firebase Configuration for pay4earn-recharge
         const firebaseConfig = {
             apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
             authDomain: "pay4earn-recharge.firebaseapp.com",
@@ -459,7 +457,6 @@
             measurementId: "G-8Q5NP1PKC4"
         };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -472,7 +469,9 @@
         const allowedAmounts = [10, 100, 349, 499, 999, 1499, 1999];
         let timerInterval = null;
 
-        // AUTH STATE OBSERVER
+        // Render Backend Server URL
+        const BACKEND_URL = "https://pay4earn-backend.onrender.com";
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
@@ -483,19 +482,15 @@
             }
         });
 
-        // 1. FETCH USER PROFILE & WALLET BALANCE
         function fetchAndListenUserData(uid) {
-            // First check 'Users' Collection (Capital U)
             db.collection("Users").doc(uid).onSnapshot((doc) => {
                 if (doc.exists) {
                     updateUserUI(doc.data());
                 } else {
-                    // Lowercase 'users' fallback
                     db.collection("users").doc(uid).onSnapshot((docLower) => {
                         if (docLower.exists) {
                             updateUserUI(docLower.data());
                         } else {
-                            // Query by uid field
                             db.collection("Users").where("uid", "==", uid).onSnapshot((querySnap) => {
                                 if (!querySnap.empty) {
                                     updateUserUI(querySnap.docs[0].data());
@@ -519,7 +514,6 @@
             document.getElementById("userEmailText").innerText = data.email || currentUser.email || "N/A";
         }
 
-        // 2. LISTEN TO TRANSACTIONS & RECHARGES HISTORY
         function listenToUserTransactions(uid) {
             db.collection("recharges")
                 .where("userId", "==", uid)
@@ -533,13 +527,13 @@
                         snapshot.forEach((doc) => {
                             const data = doc.data();
                             const dateStr = data.timestamp ? new Date(data.timestamp).toLocaleDateString() : 'N/A';
-                            const statusColor = data.status === 'SUCCESS' ? 'green' : (data.status === 'FAILED' ? 'red' : 'orange');
+                            const statusColor = data.status === 'SUCCESS' || data.status === 'Success' ? 'green' : (data.status === 'FAILED' || data.status === 'Failure' ? 'red' : 'orange');
                             
                             html += `
                                 <tr>
                                     <td>${count++}</td>
                                     <td>${dateStr}</td>
-                                    <td>${doc.id.substring(0,8)}...</td>
+                                    <td>${data.orderid || doc.id.substring(0,8)}...</td>
                                     <td>${data.operator || 'N/A'}</td>
                                     <td>${data.number || 'N/A'}</td>
                                     <td>₹${data.amount || 0}</td>
@@ -554,7 +548,7 @@
                 });
         }
 
-        // 3. SUBMIT ADD MONEY UTR REQUEST (Both Root Level & Sub-collections)
+        // ADD MONEY UTR SUBMISSION
         async function submitUtrRequest() {
             const utr = document.getElementById("utrNumberInput").value.trim();
             const amt = parseFloat(document.getElementById("addMoneyInputAmount").value);
@@ -579,26 +573,29 @@
             submitBtn.innerText = "SUBMITTING...";
 
             try {
+                let freshName = currentUserData?.fullName || currentUserData?.name || "User";
+                let freshMobile = currentUserData?.mobile || currentUserData?.phone || "";
+
                 const requestData = {
                     userId: currentUser.uid,
                     uid: currentUser.uid,
-                    userName: currentUserData?.fullName || currentUserData?.name || "User",
-                    userMobile: currentUserData?.mobile || "",
+                    userName: freshName,
+                    fullName: freshName,
+                    userMobile: freshMobile,
+                    mobile: freshMobile,
                     userEmail: currentUser.email || "",
+                    email: currentUser.email || "",
                     amount: amt,
                     utrNumber: utr,
+                    utr: utr,
                     status: "PENDING",
                     timestamp: Date.now(),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    paymentMethod: "PhonePe QR"
+                    paymentMethod: "PhonePe QR (Web)"
                 };
 
-                // Root Collection Write (for Admin App Root Readers)
                 await db.collection("wallet_requests").add(requestData);
-
-                // Sub-collection Writes (Capital 'Users' & lowercase 'users')
                 await db.collection("Users").doc(currentUser.uid).collection("wallet_requests").add(requestData);
-                await db.collection("users").doc(currentUser.uid).collection("wallet_requests").add(requestData);
 
                 alert(`Payment request of ₹${amt} with UTR ${utr} submitted successfully! Waiting for Admin Approval.`);
                 
@@ -617,15 +614,15 @@
             }
         }
 
-        // 4. SUBMIT MOBILE RECHARGE
+        // 4. SUBMIT MOBILE RECHARGE VIA RENDER BACKEND (A1Topup API Execute)
         async function submitMobileRecharge(event) {
             event.preventDefault();
             const number = document.getElementById("mobileNumber").value.trim();
-            const operator = document.getElementById("mobileOperator").value;
+            const operatorCode = document.getElementById("mobileOperator").value; // e.g. RC, A, V, BT
             const amount = parseFloat(document.getElementById("mobileAmount").value);
 
             if (number.length !== 10) return alert("Enter valid 10-digit mobile number.");
-            if (!operator) return alert("Select an operator.");
+            if (!operatorCode) return alert("Select an operator.");
             if (!amount || amount <= 0) return alert("Enter valid recharge amount.");
 
             const currentBalance = parseFloat(currentUserData?.walletBalance || currentUserData?.balance || 0);
@@ -637,48 +634,54 @@
 
             const btn = document.getElementById("btnMobilePay");
             btn.disabled = true;
-            btn.innerText = "PROCESSING...";
+            btn.innerText = "PROCESSING RECHARGE...";
 
             try {
-                const rechargeData = {
-                    userId: currentUser.uid,
-                    uid: currentUser.uid,
-                    userName: currentUserData?.fullName || "",
-                    userMobile: currentUserData?.mobile || "",
-                    type: "MOBILE",
-                    number: number,
-                    operator: operator,
-                    amount: amount,
-                    status: "PENDING",
-                    timestamp: Date.now(),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+                // Generate Unique Order ID
+                const orderId = "P4E" + Date.now();
 
-                await db.collection("recharges").add(rechargeData);
-                await db.collection("Users").doc(currentUser.uid).collection("recharges").add(rechargeData);
+                // Call Render Backend to execute A1Topup API
+                const response = await fetch(`${BACKEND_URL}/api/recharge`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: currentUser.uid,
+                        number: number,
+                        operatorCode: operatorCode,
+                        amount: amount,
+                        orderId: orderId,
+                        type: "MOBILE"
+                    })
+                });
 
-                alert(`Mobile recharge request of ₹${amount} for ${number} (${operator}) submitted successfully!`);
-                document.getElementById("mobileRechargeForm").reset();
-                closeAllServiceForms();
+                const result = await response.json();
+
+                if (response.ok && (result.status === "Success" || result.status === "SUCCESS" || result.success)) {
+                    alert(`✅ Recharge Successful!\nTxn ID: ${result.txid || result.opid || 'Done'}`);
+                    document.getElementById("mobileRechargeForm").reset();
+                    closeAllServiceForms();
+                } else {
+                    alert(`❌ Recharge Failed: ${result.message || result.status || 'API Error'}`);
+                }
 
             } catch (err) {
-                console.error(err);
-                alert("Failed to submit recharge: " + err.message);
+                console.error("Recharge Error:", err);
+                alert("Server Connection Error! Please try again.");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "PAY NOW";
             }
         }
 
-        // 5. SUBMIT DTH RECHARGE
+        // 5. SUBMIT DTH RECHARGE VIA RENDER BACKEND
         async function submitDthRecharge(event) {
             event.preventDefault();
             const number = document.getElementById("dthNumber").value.trim();
-            const operator = document.getElementById("dthOperator").value;
+            const operatorCode = document.getElementById("dthOperator").value; // e.g. TTV, ATV, DTV
             const amount = parseFloat(document.getElementById("dthAmount").value);
 
             if (!number) return alert("Enter Customer ID / VC Number.");
-            if (!operator) return alert("Select a DTH operator.");
+            if (!operatorCode) return alert("Select a DTH operator.");
             if (!amount || amount <= 0) return alert("Enter valid amount.");
 
             const currentBalance = parseFloat(currentUserData?.walletBalance || currentUserData?.balance || 0);
@@ -690,40 +693,43 @@
 
             const btn = document.getElementById("btnDthPay");
             btn.disabled = true;
-            btn.innerText = "PROCESSING...";
+            btn.innerText = "PROCESSING RECHARGE...";
 
             try {
-                const rechargeData = {
-                    userId: currentUser.uid,
-                    uid: currentUser.uid,
-                    userName: currentUserData?.fullName || "",
-                    userMobile: currentUserData?.mobile || "",
-                    type: "DTH",
-                    number: number,
-                    operator: operator,
-                    amount: amount,
-                    status: "PENDING",
-                    timestamp: Date.now(),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+                const orderId = "P4E" + Date.now();
 
-                await db.collection("recharges").add(rechargeData);
-                await db.collection("Users").doc(currentUser.uid).collection("recharges").add(rechargeData);
+                const response = await fetch(`${BACKEND_URL}/api/recharge`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: currentUser.uid,
+                        number: number,
+                        operatorCode: operatorCode,
+                        amount: amount,
+                        orderId: orderId,
+                        type: "DTH"
+                    })
+                });
 
-                alert(`DTH recharge request of ₹${amount} for ${number} (${operator}) submitted successfully!`);
-                document.getElementById("dthRechargeForm").reset();
-                closeAllServiceForms();
+                const result = await response.json();
+
+                if (response.ok && (result.status === "Success" || result.status === "SUCCESS" || result.success)) {
+                    alert(`✅ DTH Recharge Successful!\nTxn ID: ${result.txid || result.opid || 'Done'}`);
+                    document.getElementById("dthRechargeForm").reset();
+                    closeAllServiceForms();
+                } else {
+                    alert(`❌ Recharge Failed: ${result.message || result.status || 'API Error'}`);
+                }
 
             } catch (err) {
-                console.error(err);
-                alert("Failed to submit DTH recharge: " + err.message);
+                console.error("DTH Recharge Error:", err);
+                alert("Server Connection Error! Please try again.");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "PAY NOW";
             }
         }
 
-        // ADD MONEY FIXED AMOUNT SELECTOR & TIMER
         function setFixedAmount(amt, eventObj) {
             if (!allowedAmounts.includes(amt)) {
                 alert("Only allowed amounts: 10, 100, 349, 499, 999, 1499, 1999");
@@ -782,7 +788,6 @@
             document.querySelectorAll('.amt-btn').forEach(btn => btn.classList.remove('selected'));
         }
 
-        // NAVIGATION & MODALS
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
@@ -823,7 +828,7 @@
             const operator = document.getElementById("mobileOperator").value;
             if(!operator) return alert("Please select a Mobile Operator first!");
 
-            document.getElementById("modalTitle").innerText = operator + " - Popular Plans";
+            document.getElementById("modalTitle").innerText = "Popular Plans";
             const container = document.getElementById("plansListContainer");
             
             const mobilePlans = [
@@ -857,7 +862,7 @@
             const operator = document.getElementById("dthOperator").value;
             if(!operator) return alert("Please select a DTH Operator first!");
 
-            document.getElementById("modalTitle").innerText = operator + " - DTH Packs";
+            document.getElementById("modalTitle").innerText = "DTH Packs";
             const container = document.getElementById("plansListContainer");
             
             const dthPlans = [
