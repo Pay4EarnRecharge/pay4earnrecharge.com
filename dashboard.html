@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Pay4Earn Recharge</title>
+    
+    <!-- Firebase SDKs (v8 compatibility) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #f1f5f9; color: #333; }
@@ -42,7 +48,6 @@
         .browse-plan-btn { width: 100%; background: #0284c7; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
         .pay-now-btn { width: 100%; background: #16a34a; color: #fff; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
 
-        /* Add Money Amount Selector Buttons */
         .amt-btn {
             background: #ffffff;
             border: 2px solid #0284c7;
@@ -59,12 +64,10 @@
             color: #ffffff;
         }
 
-        /* Reports Grid */
         .reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .report-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; text-align: center; cursor: pointer; font-weight: bold; color: #0b192c; transition: 0.2s; }
         .report-card:hover { background: #0284c7; color: #ffffff; border-color: #0284c7; }
 
-        /* Modal Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-card { background: #fff; border-radius: 8px; width: 90%; max-width: 500px; padding: 20px; max-height: 80vh; overflow-y: auto; }
         .plan-item { border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
@@ -82,7 +85,7 @@
 
     <header>
         <div class="brand-container">
-            <img src="logo.png" alt="Logo">
+            <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
             <span class="logo-text">Pay4Earn Recharge</span>
         </div>
         
@@ -101,7 +104,7 @@
         <div class="news-bar">
             <span class="news-title">News</span>
             <marquee class="news-text" scrollamount="5">
-                📢 Help line Support — Mobile - 9798168045 | Whatsapp - 7033814401 | Email - deepenkumar50@gmail.com
+                📢 Helpline Support — Mobile - 9798168045 | Whatsapp - 7033814401 | Email - deepenkumar50@gmail.com
             </marquee>
         </div>
 
@@ -157,7 +160,7 @@
                         <label>Recharge Amount</label>
                         <input type="number" id="mobileAmount" placeholder="Enter Amount (₹)" required>
                     </div>
-                    <button type="submit" class="pay-now-btn">PAY NOW</button>
+                    <button type="submit" id="btnMobilePay" class="pay-now-btn">PAY NOW</button>
                 </form>
             </div>
 
@@ -190,7 +193,7 @@
                         <label>Recharge Amount</label>
                         <input type="number" id="dthAmount" placeholder="Enter Amount (₹)" required>
                     </div>
-                    <button type="submit" class="pay-now-btn">PAY NOW</button>
+                    <button type="submit" id="btnDthPay" class="pay-now-btn">PAY NOW</button>
                 </form>
             </div>
 
@@ -212,7 +215,7 @@
                         </thead>
                         <tbody id="last5TxBody">
                             <tr>
-                                <td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td>
+                                <td colspan="7" style="text-align: center; color: #64748b;">Loading recent transactions...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -235,9 +238,9 @@
             
             <div style="margin-bottom: 20px;">
                 <h4 style="color: #0284c7; margin-bottom: 10px;">A- Personal Details</h4>
-                <p style="margin-bottom: 8px;"><strong>NAME:</strong> <span id="userDisplayName">Deepen Kumar Yadav</span></p>
-                <p style="margin-bottom: 8px;"><strong>MOBILE:</strong> <span id="userMobileText">9798168045</span></p>
-                <p style="margin-bottom: 8px;"><strong>EMAIL:</strong> <span id="userEmailText">deepenkumar50@gmail.com</span></p>
+                <p style="margin-bottom: 8px;"><strong>NAME:</strong> <span id="userDisplayName">Loading...</span></p>
+                <p style="margin-bottom: 8px;"><strong>MOBILE:</strong> <span id="userMobileText">Loading...</span></p>
+                <p style="margin-bottom: 8px;"><strong>EMAIL:</strong> <span id="userEmailText">Loading...</span></p>
             </div>
 
             <div style="border-top: 1px dashed #cbd5e1; padding-top: 15px;">
@@ -289,7 +292,7 @@
                             </tr>
                         </thead>
                         <tbody id="rechargeReportBody">
-                            <tr><td colspan="7" style="text-align:center;">No recharge records found.</td></tr>
+                            <tr><td colspan="7" style="text-align:center;">Loading records...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -311,7 +314,7 @@
                             </tr>
                         </thead>
                         <tbody id="historyReportBody">
-                            <tr><td colspan="5" style="text-align:center;">No history records found.</td></tr>
+                            <tr><td colspan="5" style="text-align:center;">Loading history...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -361,14 +364,14 @@
                             </tr>
                         </thead>
                         <tbody id="ledgerReportBody">
-                            <tr><td colspan="5" style="text-align:center;">No ledger records found.</td></tr>
+                            <tr><td colspan="5" style="text-align:center;">Loading ledger...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- 5 Add Money View (Fixed Amounts & Dynamic Pre-filled Amount QR Code) -->
+        <!-- 5 Add Money View -->
         <div id="bankView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Add Money to Wallet (PhonePe QR)</h2>
             
@@ -392,10 +395,8 @@
                     <input type="number" id="addMoneyInputAmount" readonly placeholder="Click any amount above" style="background: #e2e8f0; font-weight: bold; font-size: 16px;" required>
                 </div>
 
-                <!-- PhonePe QR / UPI Box with Dynamic Pre-filled Amount QR Code & 5 Min Timer -->
                 <div id="qrPaymentBox" style="display: none; text-align: center; background: #fff; padding: 20px; border-radius: 8px; border: 2px dashed #5f259f; margin-top: 20px;">
                     
-                    <!-- 5-Minute Countdown Timer Header -->
                     <div id="timerContainer" style="background: #fef2f2; border: 1px solid #fca5a5; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none;">
                         <span style="color: #dc2626; font-weight: bold; font-size: 14px;">
                             ⏳ QR Code Expires In: <span id="paymentTimerDisplay" style="font-size: 18px; text-decoration: underline;">05:00</span>
@@ -405,7 +406,6 @@
                     <h3 style="color: #5f259f; margin-bottom: 5px;">💜 PhonePe Business Payment</h3>
                     <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Merchant: <strong>Digital Shop Traders</strong></p>
                     
-                    <!-- Dynamic QR Code Image -->
                     <div style="background: #ffffff; padding: 10px; display: inline-block; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;">
                         <img id="dynamicQrImg" src="" alt="PhonePe QR Code" style="width: 180px; height: 180px; object-fit: contain; display: block; margin: 0 auto;">
                     </div>
@@ -445,11 +445,265 @@
         </div>
     </div>
 
-    <!-- UI Scripts -->
+    <!-- Firebase Config and Logic -->
     <script>
+        // YOUR FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "pay4earnrecharge.firebaseapp.com",
+            projectId: "pay4earnrecharge",
+            storageBucket: "pay4earnrecharge.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let currentUserData = null;
         const allowedAmounts = [10, 100, 349, 499, 999, 1499, 1999];
         let timerInterval = null;
 
+        // AUTH STATE OBSERVER
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                // Fetch User Details from 'Users' Collection (Matching your Database)
+                listenToUserData(user.uid);
+                listenToUserTransactions(user.uid);
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // 1. LISTEN TO USER PROFILE & WALLET BALANCE
+        function listenToUserData(uid) {
+            db.collection("Users").doc(uid).onSnapshot((doc) => {
+                if (doc.exists) {
+                    currentUserData = doc.data();
+                    
+                    // Update Balance
+                    const bal = parseFloat(currentUserData.walletBalance || 0).toFixed(2);
+                    document.getElementById("walletBalance").innerText = bal;
+
+                    // Update Profile Section
+                    document.getElementById("userDisplayName").innerText = currentUserData.fullName || "User";
+                    document.getElementById("userMobileText").innerText = currentUserData.mobile || "N/A";
+                    document.getElementById("userEmailText").innerText = currentUserData.email || currentUser.email;
+                }
+            }, (error) => {
+                console.error("Error listening to user data:", error);
+            });
+        }
+
+        // 2. LISTEN TO TRANSACTIONS & RECHARGES HISTORY
+        function listenToUserTransactions(uid) {
+            // Last 5 Transactions
+            db.collection("recharges")
+                .where("userId", "==", uid)
+                .limit(10)
+                .onSnapshot((snapshot) => {
+                    let html = "";
+                    let count = 1;
+                    if (snapshot.empty) {
+                        html = `<tr><td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td></tr>`;
+                    } else {
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            const dateStr = data.timestamp ? new Date(data.timestamp).toLocaleDateString() : 'N/A';
+                            const statusColor = data.status === 'SUCCESS' ? 'green' : (data.status === 'FAILED' ? 'red' : 'orange');
+                            
+                            html += `
+                                <tr>
+                                    <td>${count++}</td>
+                                    <td>${dateStr}</td>
+                                    <td>${doc.id.substring(0,8)}...</td>
+                                    <td>${data.operator || 'N/A'}</td>
+                                    <td>${data.number || 'N/A'}</td>
+                                    <td>₹${data.amount || 0}</td>
+                                    <td style="color: ${statusColor}; font-weight: bold;">${data.status || 'PENDING'}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    document.getElementById("last5TxBody").innerHTML = html;
+                    document.getElementById("rechargeReportBody").innerHTML = html;
+                    document.getElementById("historyReportBody").innerHTML = html;
+                });
+        }
+
+        // 3. SUBMIT ADD MONEY UTR REQUEST (Dually stored in root & sub-collection)
+        async function submitUtrRequest() {
+            const utr = document.getElementById("utrNumberInput").value.trim();
+            const amt = parseFloat(document.getElementById("addMoneyInputAmount").value);
+            
+            if (utr.length !== 12 || isNaN(utr)) {
+                alert("Please enter a valid 12-digit numeric UTR number.");
+                return;
+            }
+
+            if (!amt || isNaN(amt) || amt <= 0) {
+                alert("Please select a valid amount.");
+                return;
+            }
+
+            if (!currentUser) {
+                alert("User session expired. Please log in again.");
+                return;
+            }
+
+            const submitBtn = document.getElementById("btnSubmitUtr");
+            submitBtn.disabled = true;
+            submitBtn.innerText = "SUBMITTING...";
+
+            try {
+                const requestData = {
+                    userId: currentUser.uid,
+                    userName: currentUserData?.fullName || "User",
+                    userMobile: currentUserData?.mobile || "",
+                    userEmail: currentUser.email || "",
+                    amount: amt,
+                    utrNumber: utr,
+                    status: "PENDING",
+                    timestamp: Date.now(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    paymentMethod: "PhonePe QR"
+                };
+
+                // Root Collection Write
+                await db.collection("wallet_requests").add(requestData);
+
+                // Sub-collection Write for Admin Compatibility
+                await db.collection("Users").doc(currentUser.uid).collection("wallet_requests").add(requestData);
+
+                alert(`Payment request of ₹${amt} with UTR ${utr} submitted successfully! Waiting for Admin Approval.`);
+                
+                if (timerInterval) clearInterval(timerInterval);
+                document.getElementById("qrPaymentBox").style.display = "none";
+                document.getElementById("utrNumberInput").value = "";
+                document.getElementById("addMoneyInputAmount").value = "";
+                document.querySelectorAll('.amt-btn').forEach(btn => btn.classList.remove('selected'));
+
+            } catch (error) {
+                console.error("Error submitting UTR request:", error);
+                alert("Failed to submit request: " + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "SUBMIT PAYMENT REQUEST";
+            }
+        }
+
+        // 4. SUBMIT MOBILE RECHARGE
+        async function submitMobileRecharge(event) {
+            event.preventDefault();
+            const number = document.getElementById("mobileNumber").value.trim();
+            const operator = document.getElementById("mobileOperator").value;
+            const amount = parseFloat(document.getElementById("mobileAmount").value);
+
+            if (number.length !== 10) return alert("Enter valid 10-digit mobile number.");
+            if (!operator) return alert("Select an operator.");
+            if (!amount || amount <= 0) return alert("Enter valid recharge amount.");
+
+            const currentBalance = parseFloat(currentUserData?.walletBalance || 0);
+            if (currentBalance < amount) {
+                alert("Insufficient Wallet Balance! Please add money to your wallet.");
+                showSection('bankView');
+                return;
+            }
+
+            const btn = document.getElementById("btnMobilePay");
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
+
+            try {
+                const rechargeData = {
+                    userId: currentUser.uid,
+                    userName: currentUserData?.fullName || "",
+                    userMobile: currentUserData?.mobile || "",
+                    type: "MOBILE",
+                    number: number,
+                    operator: operator,
+                    amount: amount,
+                    status: "PENDING",
+                    timestamp: Date.now(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection("recharges").add(rechargeData);
+                await db.collection("Users").doc(currentUser.uid).collection("recharges").add(rechargeData);
+
+                alert(`Mobile recharge request of ₹${amount} for ${number} (${operator}) submitted successfully!`);
+                document.getElementById("mobileRechargeForm").reset();
+                closeAllServiceForms();
+
+            } catch (err) {
+                console.error(err);
+                alert("Failed to submit recharge: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "PAY NOW";
+            }
+        }
+
+        // 5. SUBMIT DTH RECHARGE
+        async function submitDthRecharge(event) {
+            event.preventDefault();
+            const number = document.getElementById("dthNumber").value.trim();
+            const operator = document.getElementById("dthOperator").value;
+            const amount = parseFloat(document.getElementById("dthAmount").value);
+
+            if (!number) return alert("Enter Customer ID / VC Number.");
+            if (!operator) return alert("Select a DTH operator.");
+            if (!amount || amount <= 0) return alert("Enter valid amount.");
+
+            const currentBalance = parseFloat(currentUserData?.walletBalance || 0);
+            if (currentBalance < amount) {
+                alert("Insufficient Wallet Balance! Please add money to your wallet.");
+                showSection('bankView');
+                return;
+            }
+
+            const btn = document.getElementById("btnDthPay");
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
+
+            try {
+                const rechargeData = {
+                    userId: currentUser.uid,
+                    userName: currentUserData?.fullName || "",
+                    userMobile: currentUserData?.mobile || "",
+                    type: "DTH",
+                    number: number,
+                    operator: operator,
+                    amount: amount,
+                    status: "PENDING",
+                    timestamp: Date.now(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection("recharges").add(rechargeData);
+                await db.collection("Users").doc(currentUser.uid).collection("recharges").add(rechargeData);
+
+                alert(`DTH recharge request of ₹${amount} for ${number} (${operator}) submitted successfully!`);
+                document.getElementById("dthRechargeForm").reset();
+                closeAllServiceForms();
+
+            } catch (err) {
+                console.error(err);
+                alert("Failed to submit DTH recharge: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "PAY NOW";
+            }
+        }
+
+        // ADD MONEY FIXED AMOUNT SELECTOR & TIMER
         function setFixedAmount(amt, eventObj) {
             if (!allowedAmounts.includes(amt)) {
                 alert("Only allowed amounts: 10, 100, 349, 499, 999, 1499, 1999");
@@ -464,14 +718,12 @@
             document.getElementById("addMoneyInputAmount").value = amt;
             document.getElementById("qrDisplayAmount").innerText = amt;
 
-            // Generate UPI String with exact locked amount so scan pre-fills the amount
             const upiString = `upi://pay?pa=Q239429182@ybl&pn=DigitalShopTraders&am=${amt}&cu=INR`;
             const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiString)}`;
             
             document.getElementById("dynamicQrImg").src = qrImageUrl;
             document.getElementById("qrPaymentBox").style.display = "block";
 
-            // Start 5-Minute Countdown Timer
             startPaymentTimer(5 * 60);
         }
 
@@ -483,8 +735,6 @@
             const timerContainer = document.getElementById("timerContainer");
             
             if (timerContainer) timerContainer.style.display = "block";
-            const submitBtn = document.getElementById("btnSubmitUtr");
-            if (submitBtn) submitBtn.disabled = false;
 
             timerInterval = setInterval(() => {
                 const minutes = Math.floor(timer / 60);
@@ -512,58 +762,30 @@
             document.querySelectorAll('.amt-btn').forEach(btn => btn.classList.remove('selected'));
         }
 
-        function submitUtrRequest() {
-            const utr = document.getElementById("utrNumberInput").value.trim();
-            const amt = document.getElementById("addMoneyInputAmount").value;
-            if (utr.length !== 12) {
-                alert("Please enter a valid 12-digit UTR number.");
-                return;
-            }
-            alert(`Payment request of ₹${amt} with UTR ${utr} submitted successfully! Pending verification.`);
-            if (timerInterval) clearInterval(timerInterval);
-            document.getElementById("qrPaymentBox").style.display = "none";
-            document.getElementById("utrNumberInput").value = "";
-            document.getElementById("addMoneyInputAmount").value = "";
-            document.querySelectorAll('.amt-btn').forEach(btn => btn.classList.remove('selected'));
-        }
-
+        // NAVIGATION & MODALS
         function showSection(sectionId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
 
-            if (sectionId === 'servicesView') {
-                closeAllServiceForms();
-            }
-            if (sectionId === 'reportsView') {
-                closeReportSubs();
-            }
+            if (sectionId === 'servicesView') closeAllServiceForms();
+            if (sectionId === 'reportsView') closeReportSubs();
         }
 
         function openService(type) {
             closeAllServiceForms();
-
             if (type === 'mobile') {
-                const mobileForm = document.getElementById('mobileForm');
-                if (mobileForm) {
-                    mobileForm.style.display = 'block';
-                    mobileForm.scrollIntoView({ behavior: 'smooth' });
-                }
+                const form = document.getElementById('mobileForm');
+                if (form) { form.style.display = 'block'; form.scrollIntoView({ behavior: 'smooth' }); }
             }
             if (type === 'dth') {
-                const dthForm = document.getElementById('dthForm');
-                if (dthForm) {
-                    dthForm.style.display = 'block';
-                    dthForm.scrollIntoView({ behavior: 'smooth' });
-                }
+                const form = document.getElementById('dthForm');
+                if (form) { form.style.display = 'block'; form.scrollIntoView({ behavior: 'smooth' }); }
             }
         }
 
         function closeAllServiceForms() {
-            const mobileForm = document.getElementById('mobileForm');
-            const dthForm = document.getElementById('dthForm');
-            
-            if (mobileForm) mobileForm.style.display = 'none';
-            if (dthForm) dthForm.style.display = 'none';
+            document.getElementById('mobileForm').style.display = 'none';
+            document.getElementById('dthForm').style.display = 'none';
         }
 
         function openReportSub(subId) {
@@ -656,29 +878,19 @@
             document.getElementById("plansModal").style.display = "none";
         }
 
-        function submitMobileRecharge(event) {
-            event.preventDefault();
-            const number = document.getElementById("mobileNumber").value;
-            const operator = document.getElementById("mobileOperator").value;
-            const amount = document.getElementById("mobileAmount").value;
-            alert(`Mobile Recharge request submitted for ${number} (${operator}) of ₹${amount}`);
-        }
-
-        function submitDthRecharge(event) {
-            event.preventDefault();
-            const number = document.getElementById("dthNumber").value;
-            const operator = document.getElementById("dthOperator").value;
-            const amount = document.getElementById("dthAmount").value;
-            alert(`DTH Recharge request submitted for Customer ID ${number} (${operator}) of ₹${amount}`);
-        }
-
         function handlePasswordReset() {
-            alert("Password reset instructions have been sent to your registered email address.");
+            if (currentUser && currentUser.email) {
+                auth.sendPasswordResetEmail(currentUser.email)
+                    .then(() => alert("Password reset instructions sent to " + currentUser.email))
+                    .catch(err => alert("Error: " + err.message));
+            }
         }
 
         function handleLogout() {
             if(confirm("Are you sure you want to logout?")) {
-                window.location.href = "login.html";
+                auth.signOut().then(() => {
+                    window.location.href = "login.html";
+                });
             }
         }
     </script>
