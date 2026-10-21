@@ -87,7 +87,7 @@
         .service-card, .about-card { background: #fff; padding: 35px; border-radius: 10px; border: 1px solid #e2e8f0; }
         .service-card ul { list-style: none; margin: 20px 0; }
         .service-card ul li { margin-bottom: 10px; color: #475569; font-size: 15px; }
-        .action-btn { display: inline-block; background: #2563eb; color: #fff; padding: 10px 22px; border-radius: 6px; text-decoration: none; margin-top: 15px; font-weight: 500; }
+        .action-btn { display: inline-block; background: #2563eb; color: #fff; padding: 10px 22px; border-radius: 6px; text-decoration: none; margin-top: 15px; font-weight: 500; cursor: pointer; }
 
         /* FAQs Accordion Styles */
         .faq-item { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 12px; text-align: left; overflow: hidden; }
@@ -167,8 +167,8 @@
         </div>
     </section>
 
-    <!-- Services -->
-    <section id="services" style="background: #f1f5f9; max-width: 100%; display: none;">
+    <!-- Services Section -->
+    <section id="services" style="background: #f1f5f9; max-width: 100%;">
         <div style="max-width: 1200px; margin: 0 auto;">
             <h2>Our Services</h2>
             <p>Simple, fast, and reliable recharge solutions for all your needs</p>
@@ -183,7 +183,7 @@
                         <li>✓ Best plans & offers</li>
                         <li>✓ Transaction history</li>
                     </ul>
-                    <a href="#" class="action-btn">Recharge Now</a>
+                    <a class="action-btn recharge-action-btn">Recharge Now</a>
                 </div>
                 <div class="service-card">
                     <h3>DTH Recharge</h3>
@@ -195,7 +195,7 @@
                         <li>✓ Recharge reminders</li>
                         <li>✓ Quick & hassle-free</li>
                     </ul>
-                    <a href="#" class="action-btn">Recharge Now</a>
+                    <a class="action-btn recharge-action-btn">Recharge Now</a>
                 </div>
             </div>
         </div>
@@ -360,11 +360,9 @@
 
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
-            const servicesSection = document.getElementById("services");
-            if (user) {
-                if (servicesSection) servicesSection.style.display = "block";
-            } else {
-                if (servicesSection) servicesSection.style.display = "none";
+            const navBtn = document.getElementById("navGetStartedBtn");
+            if (navBtn) {
+                navBtn.innerText = user ? "Dashboard" : "Get Started";
             }
         });
 
@@ -380,9 +378,14 @@
         document.addEventListener("DOMContentLoaded", () => {
             const navBtn = document.getElementById("navGetStartedBtn");
             const heroBtn = document.getElementById("heroGetStartedBtn");
+            const rechargeActionBtns = document.querySelectorAll(".recharge-action-btn");
 
             if (navBtn) navBtn.addEventListener("click", handleGetStartedClick);
             if (heroBtn) heroBtn.addEventListener("click", handleGetStartedClick);
+            
+            rechargeActionBtns.forEach(btn => {
+                btn.addEventListener("click", handleGetStartedClick);
+            });
         });
     </script>
 </body>
