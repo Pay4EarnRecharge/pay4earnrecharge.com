@@ -557,6 +557,33 @@
                 });
         }
 
+        // RENDER SERVER TIMEOUT & RETRY HELPER (50 Seconds Timeout)
+        async function callBackendWithRetry(url, options, retries = 3, delay = 3000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 50000); // 50 seconds wait
+
+                    const response = await fetch(url, {
+                        ...options,
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    throw new Error(`Server returned status ${response.status}`);
+                } catch (error) {
+                    console.warn(`Attempt ${i + 1} failed: ${error.message}`);
+                    if (i === retries - 1) {
+                        throw new Error("Server is waking up from sleep mode. Please try clicking 'PAY NOW' again.");
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
         // ADD MONEY UTR SUBMISSION
         async function submitUtrRequest() {
             const utr = document.getElementById("utrNumberInput").value.trim();
@@ -648,7 +675,7 @@
             try {
                 const orderId = "P4E" + Date.now();
 
-                const response = await fetch(`${BACKEND_URL}/api/recharge`, {
+                const result = await callBackendWithRetry(`${BACKEND_URL}/api/recharge`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -661,9 +688,7 @@
                     })
                 });
 
-                const result = await response.json();
-
-                if (response.ok && (result.status === "Success" || result.status === "SUCCESS" || result.success)) {
+                if (result.status === "Success" || result.status === "SUCCESS" || result.success) {
                     alert(`✅ Recharge Successful!\nTxn ID: ${result.txid || result.opid || 'Done'}`);
                     document.getElementById("mobileRechargeForm").reset();
                     closeAllServiceForms();
@@ -673,7 +698,7 @@
 
             } catch (err) {
                 console.error("Recharge Error:", err);
-                alert("Server Connection Error! Please try again.");
+                alert(err.message || "Server Connection Error! Please try again.");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "PAY NOW";
@@ -705,7 +730,7 @@
             try {
                 const orderId = "P4E" + Date.now();
 
-                const response = await fetch(`${BACKEND_URL}/api/recharge`, {
+                const result = await callBackendWithRetry(`${BACKEND_URL}/api/recharge`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -718,9 +743,7 @@
                     })
                 });
 
-                const result = await response.json();
-
-                if (response.ok && (result.status === "Success" || result.status === "SUCCESS" || result.success)) {
+                if (result.status === "Success" || result.status === "SUCCESS" || result.success) {
                     alert(`✅ DTH Recharge Successful!\nTxn ID: ${result.txid || result.opid || 'Done'}`);
                     document.getElementById("dthRechargeForm").reset();
                     closeAllServiceForms();
@@ -730,7 +753,7 @@
 
             } catch (err) {
                 console.error("DTH Recharge Error:", err);
-                alert("Server Connection Error! Please try again.");
+                alert(err.message || "Server Connection Error! Please try again.");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "PAY NOW";
