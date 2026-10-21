@@ -145,7 +145,6 @@
                     </div>
                     <div class="form-group">
                         <label>Select Operator</label>
-                        <!-- Updated value options with A1Topup exact Operator Codes -->
                         <select id="mobileOperator" required>
                             <option value="">-- Choose Operator --</option>
                             <option value="RC">Jio (RC)</option>
@@ -179,7 +178,6 @@
                     </div>
                     <div class="form-group">
                         <label>Select Operator</label>
-                        <!-- Updated value options with A1Topup exact Operator Codes -->
                         <select id="dthOperator" required>
                             <option value="">-- Choose Operator --</option>
                             <option value="TTV">Tata Play (TTV)</option>
@@ -200,9 +198,9 @@
                 </form>
             </div>
 
-            <!-- LAST 5 TRANSACTIONS TABLE -->
+            <!-- LAST TRANSACTIONS TABLE (Sorted New to Old) -->
             <div class="tx-section">
-                <h3 style="color: #0b192c;">Last 5 Transactions History</h3>
+                <h3 style="color: #0b192c;">Recent Transactions History (Latest First)</h3>
                 <div style="overflow-x: auto;">
                     <table class="tx-table">
                         <thead>
@@ -279,7 +277,7 @@
 
             <div id="reportRecharge" class="report-sub-view" style="display: none;">
                 <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
-                <h3 style="color: #0b192c; margin-bottom: 15px;">📲 A- Recharge Report</h3>
+                <h3 style="color: #0b192c; margin-bottom: 15px;">📲 A- Recharge Report (Latest First)</h3>
                 <div style="overflow-x: auto;">
                     <table class="tx-table">
                         <thead>
@@ -302,7 +300,7 @@
 
             <div id="reportHistory" class="report-sub-view" style="display: none;">
                 <button class="back-sub-btn" onclick="closeReportSubs()">⬅️ Back to Reports</button>
-                <h3 style="color: #0b192c; margin-bottom: 15px;">📜 B- Full History Report</h3>
+                <h3 style="color: #0b192c; margin-bottom: 15px;">📜 B- Full History Report (Latest First)</h3>
                 <div style="overflow-x: auto;">
                     <table class="tx-table">
                         <thead>
@@ -514,27 +512,38 @@
             document.getElementById("userEmailText").innerText = data.email || currentUser.email || "N/A";
         }
 
+        // FETCH TRANSACTIONS & SORT NEW TO OLD (Latest First)
         function listenToUserTransactions(uid) {
             db.collection("recharges")
                 .where("userId", "==", uid)
-                .limit(10)
                 .onSnapshot((snapshot) => {
+                    let docsArray = [];
+                    snapshot.forEach((doc) => {
+                        docsArray.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    // Sort New to Old (Descending order of timestamp)
+                    docsArray.sort((a, b) => {
+                        const timeA = a.timestamp || (a.createdAt?.toMillis ? a.createdAt.toMillis() : 0);
+                        const timeB = b.timestamp || (b.createdAt?.toMillis ? b.createdAt.toMillis() : 0);
+                        return timeB - timeA;
+                    });
+
                     let html = "";
                     let count = 1;
-                    if (snapshot.empty) {
+                    if (docsArray.length === 0) {
                         html = `<tr><td colspan="7" style="text-align: center; color: #64748b;">No recent transactions found.</td></tr>`;
                     } else {
-                        snapshot.forEach((doc) => {
-                            const data = doc.data();
-                            const dateStr = data.timestamp ? new Date(data.timestamp).toLocaleDateString() : 'N/A';
+                        docsArray.slice(0, 10).forEach((data) => {
+                            const dateStr = data.timestamp ? new Date(data.timestamp).toLocaleString() : 'N/A';
                             const statusColor = data.status === 'SUCCESS' || data.status === 'Success' ? 'green' : (data.status === 'FAILED' || data.status === 'Failure' ? 'red' : 'orange');
                             
                             html += `
                                 <tr>
                                     <td>${count++}</td>
                                     <td>${dateStr}</td>
-                                    <td>${data.orderid || doc.id.substring(0,8)}...</td>
-                                    <td>${data.operator || 'N/A'}</td>
+                                    <td>${data.orderid || data.id.substring(0,8)}...</td>
+                                    <td>${data.operator || data.operatorCode || 'N/A'}</td>
                                     <td>${data.number || 'N/A'}</td>
                                     <td>₹${data.amount || 0}</td>
                                     <td style="color: ${statusColor}; font-weight: bold;">${data.status || 'PENDING'}</td>
@@ -614,11 +623,11 @@
             }
         }
 
-        // 4. SUBMIT MOBILE RECHARGE VIA RENDER BACKEND (A1Topup API Execute)
+        // SUBMIT MOBILE RECHARGE VIA RENDER BACKEND
         async function submitMobileRecharge(event) {
             event.preventDefault();
             const number = document.getElementById("mobileNumber").value.trim();
-            const operatorCode = document.getElementById("mobileOperator").value; // e.g. RC, A, V, BT
+            const operatorCode = document.getElementById("mobileOperator").value;
             const amount = parseFloat(document.getElementById("mobileAmount").value);
 
             if (number.length !== 10) return alert("Enter valid 10-digit mobile number.");
@@ -637,10 +646,8 @@
             btn.innerText = "PROCESSING RECHARGE...";
 
             try {
-                // Generate Unique Order ID
                 const orderId = "P4E" + Date.now();
 
-                // Call Render Backend to execute A1Topup API
                 const response = await fetch(`${BACKEND_URL}/api/recharge`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -673,11 +680,11 @@
             }
         }
 
-        // 5. SUBMIT DTH RECHARGE VIA RENDER BACKEND
+        // SUBMIT DTH RECHARGE VIA RENDER BACKEND
         async function submitDthRecharge(event) {
             event.preventDefault();
             const number = document.getElementById("dthNumber").value.trim();
-            const operatorCode = document.getElementById("dthOperator").value; // e.g. TTV, ATV, DTV
+            const operatorCode = document.getElementById("dthOperator").value;
             const amount = parseFloat(document.getElementById("dthAmount").value);
 
             if (!number) return alert("Enter Customer ID / VC Number.");
