@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Pay4Earn Recharge</title>
     
-    <!-- Firebase SDKs (v8 compatibility) -->
+    <!-- Firebase SDKs (v8 Compatibility Mode) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -445,16 +445,18 @@
         </div>
     </div>
 
-    <!-- Firebase Config and Logic -->
+    <!-- Firebase Script and Logic -->
     <script>
-        // YOUR FIREBASE CONFIGURATION
+        // Exact Firebase Configuration for pay4earn-recharge
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY_HERE",
-            authDomain: "pay4earnrecharge.firebaseapp.com",
-            projectId: "pay4earnrecharge",
-            storageBucket: "pay4earnrecharge.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyCs8uVbh2bQnrUwqTdAcem8lsphFQ4uC9A",
+            authDomain: "pay4earn-recharge.firebaseapp.com",
+            databaseURL: "https://pay4earn-recharge-default-rtdb.firebaseio.com",
+            projectId: "pay4earn-recharge",
+            storageBucket: "pay4earn-recharge.firebasestorage.app",
+            messagingSenderId: "57674434302",
+            appId: "1:57674434302:web:184a566300e1099de9c7af",
+            measurementId: "G-8Q5NP1PKC4"
         };
 
         // Initialize Firebase
@@ -474,37 +476,51 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                // Fetch User Details from 'Users' Collection (Matching your Database)
-                listenToUserData(user.uid);
+                fetchAndListenUserData(user.uid);
                 listenToUserTransactions(user.uid);
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        // 1. LISTEN TO USER PROFILE & WALLET BALANCE
-        function listenToUserData(uid) {
+        // 1. FETCH USER PROFILE & WALLET BALANCE
+        function fetchAndListenUserData(uid) {
+            // First check 'Users' Collection (Capital U)
             db.collection("Users").doc(uid).onSnapshot((doc) => {
                 if (doc.exists) {
-                    currentUserData = doc.data();
-                    
-                    // Update Balance
-                    const bal = parseFloat(currentUserData.walletBalance || 0).toFixed(2);
-                    document.getElementById("walletBalance").innerText = bal;
-
-                    // Update Profile Section
-                    document.getElementById("userDisplayName").innerText = currentUserData.fullName || "User";
-                    document.getElementById("userMobileText").innerText = currentUserData.mobile || "N/A";
-                    document.getElementById("userEmailText").innerText = currentUserData.email || currentUser.email;
+                    updateUserUI(doc.data());
+                } else {
+                    // Lowercase 'users' fallback
+                    db.collection("users").doc(uid).onSnapshot((docLower) => {
+                        if (docLower.exists) {
+                            updateUserUI(docLower.data());
+                        } else {
+                            // Query by uid field
+                            db.collection("Users").where("uid", "==", uid).onSnapshot((querySnap) => {
+                                if (!querySnap.empty) {
+                                    updateUserUI(querySnap.docs[0].data());
+                                }
+                            });
+                        }
+                    });
                 }
             }, (error) => {
-                console.error("Error listening to user data:", error);
+                console.error("Error fetching user data:", error);
             });
+        }
+
+        function updateUserUI(data) {
+            currentUserData = data;
+            const bal = parseFloat(data.walletBalance || data.balance || 0).toFixed(2);
+            document.getElementById("walletBalance").innerText = bal;
+
+            document.getElementById("userDisplayName").innerText = data.fullName || data.name || "User";
+            document.getElementById("userMobileText").innerText = data.mobile || data.phone || "N/A";
+            document.getElementById("userEmailText").innerText = data.email || currentUser.email || "N/A";
         }
 
         // 2. LISTEN TO TRANSACTIONS & RECHARGES HISTORY
         function listenToUserTransactions(uid) {
-            // Last 5 Transactions
             db.collection("recharges")
                 .where("userId", "==", uid)
                 .limit(10)
@@ -538,7 +554,7 @@
                 });
         }
 
-        // 3. SUBMIT ADD MONEY UTR REQUEST (Dually stored in root & sub-collection)
+        // 3. SUBMIT ADD MONEY UTR REQUEST (Both Root Level & Sub-collections)
         async function submitUtrRequest() {
             const utr = document.getElementById("utrNumberInput").value.trim();
             const amt = parseFloat(document.getElementById("addMoneyInputAmount").value);
@@ -565,7 +581,8 @@
             try {
                 const requestData = {
                     userId: currentUser.uid,
-                    userName: currentUserData?.fullName || "User",
+                    uid: currentUser.uid,
+                    userName: currentUserData?.fullName || currentUserData?.name || "User",
                     userMobile: currentUserData?.mobile || "",
                     userEmail: currentUser.email || "",
                     amount: amt,
@@ -576,11 +593,12 @@
                     paymentMethod: "PhonePe QR"
                 };
 
-                // Root Collection Write
+                // Root Collection Write (for Admin App Root Readers)
                 await db.collection("wallet_requests").add(requestData);
 
-                // Sub-collection Write for Admin Compatibility
+                // Sub-collection Writes (Capital 'Users' & lowercase 'users')
                 await db.collection("Users").doc(currentUser.uid).collection("wallet_requests").add(requestData);
+                await db.collection("users").doc(currentUser.uid).collection("wallet_requests").add(requestData);
 
                 alert(`Payment request of ₹${amt} with UTR ${utr} submitted successfully! Waiting for Admin Approval.`);
                 
@@ -610,7 +628,7 @@
             if (!operator) return alert("Select an operator.");
             if (!amount || amount <= 0) return alert("Enter valid recharge amount.");
 
-            const currentBalance = parseFloat(currentUserData?.walletBalance || 0);
+            const currentBalance = parseFloat(currentUserData?.walletBalance || currentUserData?.balance || 0);
             if (currentBalance < amount) {
                 alert("Insufficient Wallet Balance! Please add money to your wallet.");
                 showSection('bankView');
@@ -624,6 +642,7 @@
             try {
                 const rechargeData = {
                     userId: currentUser.uid,
+                    uid: currentUser.uid,
                     userName: currentUserData?.fullName || "",
                     userMobile: currentUserData?.mobile || "",
                     type: "MOBILE",
@@ -662,7 +681,7 @@
             if (!operator) return alert("Select a DTH operator.");
             if (!amount || amount <= 0) return alert("Enter valid amount.");
 
-            const currentBalance = parseFloat(currentUserData?.walletBalance || 0);
+            const currentBalance = parseFloat(currentUserData?.walletBalance || currentUserData?.balance || 0);
             if (currentBalance < amount) {
                 alert("Insufficient Wallet Balance! Please add money to your wallet.");
                 showSection('bankView');
@@ -676,6 +695,7 @@
             try {
                 const rechargeData = {
                     userId: currentUser.uid,
+                    uid: currentUser.uid,
                     userName: currentUserData?.fullName || "",
                     userMobile: currentUserData?.mobile || "",
                     type: "DTH",
