@@ -368,7 +368,7 @@
             </div>
         </div>
 
-        <!-- 5 Add Money View (Fixed Amounts & PhonePe QR Flush Display) -->
+        <!-- 5 Add Money View (Fixed Amounts & Dynamic Pre-filled Amount QR Code) -->
         <div id="bankView" class="view-section content-card">
             <h2 style="color: #0b192c; margin-bottom: 15px;">Add Money to Wallet (PhonePe QR)</h2>
             
@@ -392,24 +392,24 @@
                     <input type="number" id="addMoneyInputAmount" readonly placeholder="Click any amount above" style="background: #e2e8f0; font-weight: bold; font-size: 16px;" required>
                 </div>
 
-                <!-- PhonePe QR / UPI Box Flush -->
+                <!-- PhonePe QR / UPI Box with Dynamic Pre-filled Amount QR Code -->
                 <div id="qrPaymentBox" style="display: none; text-align: center; background: #fff; padding: 20px; border-radius: 8px; border: 2px dashed #5f259f; margin-top: 20px;">
                     <h3 style="color: #5f259f; margin-bottom: 5px;">💜 PhonePe Business Payment</h3>
                     <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Merchant: <strong>Digital Shop Traders</strong></p>
                     
-                    <!-- QR Code Image Box -->
+                    <!-- Dynamic QR Code Image (Amount pre-filled in UPI link) -->
                     <div style="background: #ffffff; padding: 10px; display: inline-block; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;">
-                        <img src="qr.png" alt="PhonePe QR Code" style="width: 180px; height: 180px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=Q239429182@ybl&pn=DigitalShopTraders'">
+                        <img id="dynamicQrImg" src="" alt="PhonePe QR Code" style="width: 180px; height: 180px; object-fit: contain; display: block; margin: 0 auto;">
                     </div>
 
                     <div style="font-size: 16px; font-weight: bold; color: #16a34a; margin-bottom: 10px;">
-                        Pay Amount: ₹ <span id="qrDisplayAmount">0</span>
+                        Scan & Pay Exactly: ₹ <span id="qrDisplayAmount">0</span>
                     </div>
 
                     <div style="margin-bottom: 15px;">
                         <p style="font-size: 12px; color: #64748b; margin-bottom: 5px;">Or Send Money Directly to UPI ID:</p>
                         <div style="background: #f1f5f9; padding: 8px; border-radius: 4px; font-weight: bold; color: #0b192c; font-size: 14px; display: inline-block;">
-                            Q239429182@ybl
+                            Q239429182@ybl[cite: 1]
                         </div>
                     </div>
 
@@ -452,6 +452,12 @@
 
             document.getElementById("addMoneyInputAmount").value = amt;
             document.getElementById("qrDisplayAmount").innerText = amt;
+
+            // Generate UPI String with exact locked amount so scan pre-fills the amount
+            const upiString = `upi://pay?pa=Q239429182@ybl&pn=DigitalShopTraders&am=${amt}&cu=INR`;
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiString)}`;
+            
+            document.getElementById("dynamicQrImg").src = qrImageUrl;
             document.getElementById("qrPaymentBox").style.display = "block";
         }
 
