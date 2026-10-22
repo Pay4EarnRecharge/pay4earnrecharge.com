@@ -146,12 +146,13 @@
                     <div class="form-group">
                         <label>Select Operator</label>
                         <select id="mobileOperator" required>
-                            <option value="">-- Choose Operator --</option>
-                            <option value="RC">Jio (RC)</option>
-                            <option value="A">Airtel (A)</option>
-                            <option value="V">Vodafone Idea - Vi (V)</option>
-                            <option value="BT">BSNL TopUp (BT)</option>
-                            <option value="BR">BSNL Special (BR)</option>
+                            <option value="">-- Choose Mobile Operator --</option>
+                            <option value="A">Airtel Mobile (A)</option>
+                            <option value="RC">Jio Mobile (RC)</option>
+                            <option value="V">Vodafone / Vi Mobile (V)</option>
+                            <option value="I">Idea Mobile (I)</option>
+                            <option value="BT">BSNL Topup (BT)</option>
+                            <option value="BR">BSNL STV (BR)</option>
                         </select>
                     </div>
                     
@@ -557,30 +558,43 @@
                 });
         }
 
-        // RENDER SERVER TIMEOUT & RETRY HELPER (50 Seconds Timeout)
-        async function callBackendWithRetry(url, options, retries = 3, delay = 3000) {
-            for (let i = 0; i < retries; i++) {
+        // BACKEND REQUEST HELPER: show the real server error and do not auto-retry a recharge POST.
+        // Automatic retries can accidentally submit the same recharge more than once.
+        async function callBackendWithRetry(url, options) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 50000);
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    signal: controller.signal
+                });
+
+                const rawText = await response.text();
+                let data;
                 try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 50000); // 50 seconds wait
-
-                    const response = await fetch(url, {
-                        ...options,
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-
-                    if (response.ok) {
-                        return await response.json();
-                    }
-                    throw new Error(`Server returned status ${response.status}`);
-                } catch (error) {
-                    console.warn(`Attempt ${i + 1} failed: ${error.message}`);
-                    if (i === retries - 1) {
-                        throw new Error("Server is waking up from sleep mode. Please try clicking 'PAY NOW' again.");
-                    }
-                    await new Promise(resolve => setTimeout(resolve, delay));
+                    data = rawText ? JSON.parse(rawText) : {};
+                } catch {
+                    data = { message: rawText || "Invalid server response" };
                 }
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message ||
+                        data.error ||
+                        `Backend HTTP Error: ${response.status}`
+                    );
+                }
+
+                return data;
+            } catch (error) {
+                console.error("Backend API Error:", error);
+                if (error.name === "AbortError") {
+                    throw new Error("Backend timeout. Recharge status check karein.");
+                }
+                throw error;
+            } finally {
+                clearTimeout(timeoutId);
             }
         }
 
